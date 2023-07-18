@@ -23,14 +23,10 @@ public class TemplateHandler {
     private final String templateString;
     private final Template template;
 
-    private final StageStatusRequest stageStatusRequest;
-
     public TemplateHandler(
             @NonNull String templateName,
-            @NonNull String template,
-            @NonNull StageStatusRequest stageStatusRequest) throws IOException {
+            @NonNull String template) throws IOException {
         this.templateString = template;
-        this.stageStatusRequest = stageStatusRequest;
 
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_30);
         cfg.setDefaultEncoding("UTF-8");
@@ -44,11 +40,12 @@ public class TemplateHandler {
                 cfg);
     }
 
-    public String eval() throws TemplateException, IOException {
+    public String eval(@NonNull StageStatusRequest stageStatusRequest, Map<String,String> serverInfo) throws TemplateException, IOException {
 
         Writer out = new StringWriter();
         Map<Object, Object> model = new HashMap<>();
         model.put("stageStatus", stageStatusRequest);
+        model.put("serverInfo", serverInfo);
 
         template.process(model, out);
 

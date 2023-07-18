@@ -9,6 +9,7 @@ import freemarker.template.TemplateException;
 import lombok.NonNull;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class StageStatusHandler {
 
@@ -26,13 +27,13 @@ public class StageStatusHandler {
         this.proxUrl = proxy;
     }
 
-    public StageAndAgentStatusChangedResponse handle(@NonNull StageStatusRequest stageStatusRequest) {
+    public StageAndAgentStatusChangedResponse handle(@NonNull StageStatusRequest stageStatusRequest, @NonNull Map<String, String> serverInfo) {
 
         String instanceTemplate;
 
         try {
-            TemplateHandler conditionHandler = new TemplateHandler("condition", condition, stageStatusRequest);
-            String conditionValue = conditionHandler.eval();
+            TemplateHandler conditionHandler = new TemplateHandler("condition", condition);
+            String conditionValue = conditionHandler.eval(stageStatusRequest, serverInfo);
             LOGGER.debug("Instance condition: " + conditionValue);
 
             if (!Boolean.parseBoolean(conditionValue)) {
@@ -45,8 +46,8 @@ public class StageStatusHandler {
         }
 
         try {
-            TemplateHandler templateHandler = new TemplateHandler("template", template, stageStatusRequest);
-            instanceTemplate = templateHandler.eval();
+            TemplateHandler templateHandler = new TemplateHandler("template", template);
+            instanceTemplate = templateHandler.eval(stageStatusRequest, serverInfo);
             LOGGER.debug("Instance template: " + instanceTemplate);
         }
         catch (TemplateException | IOException e) {

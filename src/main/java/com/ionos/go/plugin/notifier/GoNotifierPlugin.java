@@ -63,16 +63,16 @@ public class GoNotifierPlugin implements GoPlugin {
 
     private final ConfigurationProperties configurationProperties;
 
-    private final static String PARAM_TEMPLATE = "template";
-    private final static String PARAM_CONDITION = "condition";
-    private final static String PARAM_WEBHOOK_URL = "webhook_url";
-    private final static String PARAM_PROXY_URL = "proxy_url";
+    private static final String PARAM_TEMPLATE = "template";
+    private static final String PARAM_CONDITION = "condition";
+    private static final String PARAM_WEBHOOK_URL = "webhook_url";
+    private static final String PARAM_PROXY_URL = "proxy_url";
 
-    private final static String DEFAULT_TEMPLATE = "${stageStatus.pipeline.group}/${stageStatus.pipeline.name}/${stageStatus.pipeline.stage.name} is ${stageStatus.pipeline.stage.state}";
+    private static final String DEFAULT_TEMPLATE = "${stageStatus.pipeline.group}/${stageStatus.pipeline.name}/${stageStatus.pipeline.stage.name} is ${stageStatus.pipeline.stage.state}";
 
-    private final static String DEFAULT_CONDITION = "${stageStatus.pipeline.stage.result == 'failed'}";
+    private static final String DEFAULT_CONDITION = "${stageStatus.pipeline.stage.result == 'failed'}";
 
-    private final static String DEFAULT_URL = "https://chat.googleapis.com/v1/spaces/.../messages?key=...&token=...";
+    private static final String DEFAULT_URL = "https://chat.googleapis.com/v1/spaces/.../messages?key=...&token=...";
 
     /** Constructs this plugin and initializes the message handlers. */
     public GoNotifierPlugin() {
@@ -129,7 +129,7 @@ public class GoNotifierPlugin implements GoPlugin {
         String proxy = settings.get(PARAM_PROXY_URL);
 
         StageStatusHandler stageStatusHandler = new StageStatusHandler(condition, template, webhookUrl, proxy);
-        StageAndAgentStatusChangedResponse response = stageStatusHandler.handle(stageStatus);
+        StageAndAgentStatusChangedResponse response = stageStatusHandler.handle(stageStatus, getServerInfo());
         return success(toJsonString(response));
     }
 
@@ -203,6 +203,31 @@ public class GoNotifierPlugin implements GoPlugin {
         return gson.fromJson(response.responseBody(), Map.class);
     }
 
+    private Map<String, String> getServerInfo() {
+        Gson gson = new Gson();
+        // create a request
+        DefaultGoApiRequest request = new DefaultGoApiRequest(
+                "go.processor.server-info.get",
+                "1.0",
+                pluginIdentifier()
+        );
+
+        // set the request body
+        Map<String, String> map = new HashMap<>();
+        map.put("plugin-id", "com.ionos.gchat.notifier");
+        request.setRequestBody(gson.toJson(map));
+
+        GoApiResponse response = this.goApplicationAccessor.submit(request);
+
+        // check status
+        if (response.responseCode() != 200) {
+            LOGGER.error("The server sent an unexpected status code " + response.responseCode() + " with the response body " + response.responseBody());
+        }
+
+        // parse the response, using a json parser of your choice
+        return gson.fromJson(response.responseBody(), Map.class);
+    }
+
     private DefaultGoPluginApiResponse handleValidateConfiguration(GoPluginApiRequest request) {
         LOGGER.info("Request: " + request.requestBody());
         ValidateConfigurationRequest validateRequest = fromJsonString(request.requestBody(), ValidateConfigurationRequest.class);
@@ -220,8 +245,8 @@ public class GoNotifierPlugin implements GoPlugin {
             response.add(new ValidateConfigurationResponse(PARAM_CONDITION, PARAM_CONDITION + " is empty"));
         } else {
             try {
-                TemplateHandler handler = new TemplateHandler("condition", condition, newSampleStageStatusRequest());
-                String shouldBeBool = handler.eval();
+                TemplateHandler handler = new TemplateHandler("condition", condition);
+                String shouldBeBool = handler.eval(newSampleStageStatusRequest(), getServerInfo());
                 if (!(shouldBeBool.equals("true") || shouldBeBool.equals("false"))) {
                     response.add(new ValidateConfigurationResponse(PARAM_CONDITION, "Condition should eval to true or false, but evals to: " + shouldBeBool));
                 }
@@ -237,8 +262,8 @@ public class GoNotifierPlugin implements GoPlugin {
             response.add(new ValidateConfigurationResponse(PARAM_TEMPLATE, PARAM_TEMPLATE + " is empty"));
         } else {
             try {
-                TemplateHandler handler = new TemplateHandler("template", template, newSampleStageStatusRequest());
-                handler.eval();
+                TemplateHandler handler = new TemplateHandler("template", template);
+                handler.eval(newSampleStageStatusRequest(), getServerInfo());
             }
             catch (Exception e) {
                 LOGGER.warn("Exception in " + PARAM_TEMPLATE, e);
