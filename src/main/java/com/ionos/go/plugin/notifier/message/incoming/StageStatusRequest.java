@@ -89,29 +89,15 @@ public class StageStatusRequest {
         @SerializedName("previous-stage-counter")
         private Integer previousStageCounter;
 
-        public enum State {
-            building,
-            passed,
-            failed,
-            cancelled;
-        }
+        @Expose
+        @Getter
+        @Setter
+        private String state;
 
         @Expose
         @Getter
         @Setter
-        private State state;
-
-        public enum Result {
-            passed,
-            failed,
-            cancelled,
-            unknown;
-        }
-
-        @Expose
-        @Getter
-        @Setter
-        private Result result;
+        private String result;
 
         @Expose
         @Getter
@@ -138,27 +124,15 @@ public class StageStatusRequest {
         @Setter
         private String counter;
 
-        enum State {
-            scheduled,
-            completed;
-        }
+        @Expose
+        @Getter
+        @Setter
+        private String state;
 
         @Expose
         @Getter
         @Setter
-        private State state;
-
-        enum Result {
-            passed,
-            failed,
-            cancelled,
-            unknown;
-        }
-
-        @Expose
-        @Getter
-        @Setter
-        private Result result;
+        private String result;
 
         @Expose
         @Getter

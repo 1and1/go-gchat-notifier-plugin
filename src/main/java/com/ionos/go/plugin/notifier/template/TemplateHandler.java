@@ -2,36 +2,57 @@ package com.ionos.go.plugin.notifier.template;
 
 import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
 import com.thoughtworks.go.plugin.api.logging.Logger;
-import lombok.Getter;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import lombok.NonNull;
 
-import javax.el.ExpressionFactory;
-import javax.el.ValueExpression;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
-public class TemplateHandler<T> {
+public class TemplateHandler {
 
     private static final Logger LOGGER = Logger.getLoggerFor(TemplateHandler.class);
 
-    private final ExpressionFactory factory;
+    private final String templateString;
+    private final Template template;
 
-    private final String template;
+    private final StageStatusRequest stageStatusRequest;
 
-    @Getter
-    private final MyContext context;
+    public TemplateHandler(
+            @NonNull String templateName,
+            @NonNull String template,
+            @NonNull StageStatusRequest stageStatusRequest) throws IOException {
+        this.templateString = template;
+        this.stageStatusRequest = stageStatusRequest;
 
-    private final Class<T> clazz;
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_30);
+        cfg.setDefaultEncoding("UTF-8");
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        cfg.setLogTemplateExceptions(false);
+        cfg.setWrapUncheckedExceptions(true);
+        cfg.setFallbackOnNullLoopVariable(false);
+        cfg.setSQLDateAndTimeTimeZone(TimeZone.getDefault());
 
-    public TemplateHandler(@NonNull String template, @NonNull StageStatusRequest stageStatusRequest, @NonNull  Class<T> clazz) {
-        this.template = template;
-        this.factory = ExpressionFactory.newInstance();
-        this.context = new MyContext(stageStatusRequest);
-        this.clazz = clazz;
-        context.getVariableMapper().setVariable("stageStatus", new SimpleValueExpression<>(stageStatusRequest));
+        this.template = new Template(templateName, new StringReader(templateString),
+                cfg);
     }
 
-    public T eval() {
-        final ValueExpression exp = factory.createValueExpression(context, template, clazz);
-        final T value = clazz.cast( exp.getValue(context) );
+    public String eval() throws TemplateException, IOException {
+
+        Writer out = new StringWriter();
+        Map<Object, Object> model = new HashMap<>();
+        model.put("stageStatus", stageStatusRequest);
+
+        template.process(model, out);
+
+        final String value = out.toString();
         LOGGER.debug("Value is: " + value);
         return value;
     }

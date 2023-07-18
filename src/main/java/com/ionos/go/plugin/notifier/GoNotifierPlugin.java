@@ -61,14 +61,14 @@ public class GoNotifierPlugin implements GoPlugin {
     /** The go application accessor. */
     private GoApplicationAccessor goApplicationAccessor;
 
-    private ConfigurationProperties configurationProperties;
+    private final ConfigurationProperties configurationProperties;
 
     private final static String PARAM_TEMPLATE = "template";
     private final static String PARAM_CONDITION = "condition";
     private final static String PARAM_WEBHOOK_URL = "webhook_url";
     private final static String PARAM_PROXY_URL = "proxy_url";
 
-    private final static String DEFAULT_TEMPLATE = "Pipeline group/name/stage ${stageStatus.pipeline.group}/${stageStatus.pipeline.name}/${stageStatus.pipeline.stage.name} is ${stageStatus.pipeline.stage.state}";
+    private final static String DEFAULT_TEMPLATE = "${stageStatus.pipeline.group}/${stageStatus.pipeline.name}/${stageStatus.pipeline.stage.name} is ${stageStatus.pipeline.stage.state}";
 
     private final static String DEFAULT_CONDITION = "${stageStatus.pipeline.stage.result == 'failed'}";
 
@@ -219,9 +219,12 @@ public class GoNotifierPlugin implements GoPlugin {
         if (condition.isEmpty()) {
             response.add(new ValidateConfigurationResponse(PARAM_CONDITION, PARAM_CONDITION + " is empty"));
         } else {
-            TemplateHandler<Boolean> handler = new TemplateHandler<>(condition, newSampleStageStatusRequest(), Boolean.class);
             try {
-                handler.eval();
+                TemplateHandler handler = new TemplateHandler("condition", condition, newSampleStageStatusRequest());
+                String shouldBeBool = handler.eval();
+                if (!(shouldBeBool.equals("true") || shouldBeBool.equals("false"))) {
+                    response.add(new ValidateConfigurationResponse(PARAM_CONDITION, "Condition should eval to true or false, but evals to: " + shouldBeBool));
+                }
             }
             catch (Exception e) {
                 LOGGER.warn("Exception in " + PARAM_CONDITION, e);
@@ -233,8 +236,8 @@ public class GoNotifierPlugin implements GoPlugin {
         if (template.isEmpty()) {
             response.add(new ValidateConfigurationResponse(PARAM_TEMPLATE, PARAM_TEMPLATE + " is empty"));
         } else {
-            TemplateHandler<String> handler = new TemplateHandler<>(template, newSampleStageStatusRequest(), String.class);
             try {
+                TemplateHandler handler = new TemplateHandler("template", template, newSampleStageStatusRequest());
                 handler.eval();
             }
             catch (Exception e) {
@@ -252,23 +255,33 @@ public class GoNotifierPlugin implements GoPlugin {
             }
         }
 
-        // TODO template / condition
         return success(toJsonString(response));
     }
 
+    /** Creates a sample object for testing the condition and the template with.
+     * */
     private StageStatusRequest newSampleStageStatusRequest() {
         StageStatusRequest response = new StageStatusRequest();
         StageStatusRequest.Pipeline pipeline = new StageStatusRequest.Pipeline();
         StageStatusRequest.Stage stage = new StageStatusRequest.Stage();
+        StageStatusRequest.Job job = new StageStatusRequest.Job();
+
+        job.setName("jobname");
+        job.setAssignTime(ZonedDateTime.now());
+        job.setCompleteTime(ZonedDateTime.now());
+        job.setScheduleTime(ZonedDateTime.now());
+        job.setState("failed");
+        job.setResult("cancelled");
 
         stage.setName("stagename");
         stage.setApprovedBy("John Doe");
         stage.setCounter("1");
         stage.setPreviousStageCounter(0);
         stage.setApprovalType("foo");
-        stage.setState(StageStatusRequest.Stage.State.failed);
-        stage.setResult(StageStatusRequest.Stage.Result.cancelled);
+        stage.setState("failed");
+        stage.setResult("cancelled");
         stage.setCreateTime(ZonedDateTime.now());
+        stage.setJobs(new StageStatusRequest.Job[] {job});
 
         pipeline.setStage(stage);
         pipeline.setName("pipelinename");
