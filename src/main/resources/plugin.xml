@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<go-plugin id="com.ionos.gchat.notifier.3" version="1">
+  <about>
+    <name>GoCD GChat notifier plugin</name>
+    <version>${project.version}</version>
+    <target-go-version>${go.version}</target-go-version>
+    <description>Sends GoCD pipeline status updates to GChat webhook URLs</description>
+    <vendor>
+      <name>1&amp;1 Ionos SE</name>
+      <url>https://github.com/1and1/go-maven-poller</url>
+    </vendor>
+  </about>
+</go-plugin>

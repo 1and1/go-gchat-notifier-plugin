@@ -1,0 +1,20 @@
+<div class="form_item_block">
+    <label>GChat template (EL):<span class='asterix'>*</span></label>
+    <input type="text" ng-model="template" ng-required="true" cols="40" rows="5"/>
+    <span class="form_error" ng-show="GOINPUTNAME[template].$error.server">{{GOINPUTNAME[template].$error.server}}</span>
+</div>
+<div class="form_item_block">
+    <label>Condition for sending (EL):<span class='asterix'>*</span></label>
+    <input type="text" ng-model="condition" ng-required="true" cols="40" rows="5"/>
+    <span class="form_error" ng-show="GOINPUTNAME[condition].$error.server">{{GOINPUTNAME[condition].$error.server}}</span>
+</div>
+<div class="form_item_block">
+    <label>GChat webhook URL:<span class='asterix'>*</span></label>
+    <input type="text" ng-model="webhook_url" ng-required="true"/>
+    <span class="form_error" ng-show="GOINPUTNAME[webhook_url].$error.server">{{GOINPUTNAME[webhook_url].$error.server}}</span>
+</div>
+<div class="form_item_block">
+    <label>Optional proxy URL:</label>
+    <input type="text" ng-model="proxy_url" ng-required="true"/>
+    <span class="form_error" ng-show="GOINPUTNAME[proxy_url].$error.server">{{GOINPUTNAME[proxy_url].$error.server}}</span>
+</div>
