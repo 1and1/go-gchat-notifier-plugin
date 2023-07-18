@@ -1,11 +1,11 @@
 <div class="form_item_block">
     <label>GChat template (<a href="https://freemarker.apache.org/docs/dgui_template_overallstructure.html" target="_blank">freemarker</a>):<span class='asterix'>*</span></label>
-    <input type="text" ng-model="template" ng-required="true" cols="40" rows="5"/>
+    <textarea ng-model="template" ng-required="true" cols="40" rows="5"/>
     <span class="form_error" ng-show="GOINPUTNAME[template].$error.server">{{GOINPUTNAME[template].$error.server}}</span>
 </div>
 <div class="form_item_block">
     <label>Condition for sending (<a href="https://freemarker.apache.org/docs/dgui_template_overallstructure.html" target="_blank">freemarker</a>):<span class='asterix'>*</span></label>
-    <input type="text" ng-model="condition" ng-required="true" cols="40" rows="5"/>
+    <textarea ng-model="condition" ng-required="true" cols="40" rows="5"/>
     <span class="form_error" ng-show="GOINPUTNAME[condition].$error.server">{{GOINPUTNAME[condition].$error.server}}</span>
 </div>
 <div class="form_item_block">
