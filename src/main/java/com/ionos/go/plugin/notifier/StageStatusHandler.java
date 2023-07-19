@@ -18,13 +18,13 @@ public class StageStatusHandler {
     private final String condition;
     private final String template;
     private final String webhookUrl;
-    private final String proxUrl;
+    private final String proxyUrl;
 
-    public StageStatusHandler(@NonNull String condition, @NonNull String template, @NonNull String webhookUrl, String proxy) {
+    public StageStatusHandler(@NonNull String condition, @NonNull String template, @NonNull String webhookUrl, String proxyUrl) {
         this.condition = condition;
         this.template = template;
         this.webhookUrl = webhookUrl;
-        this.proxUrl = proxy;
+        this.proxyUrl = proxyUrl;
     }
 
     public StageAndAgentStatusChangedResponse handle(@NonNull StageStatusRequest stageStatusRequest, @NonNull Map<String, String> serverInfo) {
@@ -55,7 +55,7 @@ public class StageStatusHandler {
             instanceTemplate = "ERROR: Template instance had an error: " + e.getMessage();
         }
 
-        GoogleChatWebhookSender googleChatWebhookSender = new GoogleChatWebhookSender(proxUrl);
+        GoogleChatWebhookSender googleChatWebhookSender = new GoogleChatWebhookSender(proxyUrl);
         try {
             googleChatWebhookSender.send(webhookUrl, instanceTemplate);
             return new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.success);
