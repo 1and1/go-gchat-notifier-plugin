@@ -20,7 +20,7 @@ for (( i = 0; i < 180 ; i++ )); do
   # download API
   curl > plugin_info.json --silent \
     -H "Accept: ${ACCEPT}" \
-    http://localhost:8153/go/api/admin/plugin_info/maven-repo \
+    http://localhost:8153/go/api/admin/plugin_info/com.ionos.gchat.notifier \
     || continue
 
   # break if success
