@@ -71,11 +71,16 @@ The following configuration items exist in the plugin:
   to the following objects:
   * `stageStatus`: The original stage status request from the
     GoCD server. Can be used to render some information
-    about the pipeline. See [this json](doc/stageStatus.json)
-    for a sample on the document structure.
+    about the pipeline.
+    See [this json](doc/stageStatus.json)
+    or [this image](img/stageStatus.png) for a sample
+    on the document structure.
   * `serverInfo`: The server info object that contains the
     servers address(es). Can be used to render some
     URLs towards the console.
+    See [this json](doc/serverInfo.json)
+    or [this image](img/serverInfo.png) for a sample
+    on the document structure.
 * Condition for sending (freemarker):* A freemarker format template
   that either needs to render to the String `true` or
   `false` to decide whether to send a message (`true`)
