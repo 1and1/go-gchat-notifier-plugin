@@ -7,6 +7,7 @@
 
 ACCEPT=$1
 GOVERSION=$2
+PLUGINID=$3
 
 echo "Accept: ${ACCEPT} for GoCD ${GOVERSION}"
 for (( i = 0; i < 180 ; i++ )); do
@@ -20,7 +21,7 @@ for (( i = 0; i < 180 ; i++ )); do
   # download API
   curl > plugin_info.json --silent \
     -H "Accept: ${ACCEPT}" \
-    http://localhost:8153/go/api/admin/plugin_info/com.ionos.gchat.notifier \
+    http://localhost:8153/go/api/admin/plugin_info/$PLUGINID \
     || continue
 
   # break if success

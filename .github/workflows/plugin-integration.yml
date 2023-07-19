@@ -85,7 +85,7 @@ jobs:
         docker-compose up --detach
     - name: Wait and get the plugin info via API
       run: |
-        bash ./.github/integration-helper/wait-download-plugin_info.sh ${{ matrix.accept }} ${{ matrix.goversion }}
+        bash ./.github/integration-helper/wait-download-plugin_info.sh ${{ matrix.accept }} ${{ matrix.goversion }} com.ionos.gchat.notifier
     - uses: actions/upload-artifact@v3
       with:
         name: output-json-${{ matrix.goversion }}
