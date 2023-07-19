@@ -30,8 +30,8 @@
 
   <scm>
     <url>https://github.com/1and1/go-gchat-notifier-plugin.git</url>
-    <connection>scm:git:git@github.com:1and1/go-notifier-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:1and1/go-notifier-plugin.git</developerConnection>
+    <connection>scm:git:git@github.com:1and1/go-gchat-notifier-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:1and1/go-gchat-notifier-plugin.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
