@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonUtil {
 
+    /** The ISO 8861 date time format to use for JSON. */
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /**
@@ -37,7 +38,6 @@ public class JsonUtil {
     public static <T> T fromJsonString(final String json, final Class<T> type) {
         final GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeConverter(dateTimeFormatter));
-        gsonBuilder.registerTypeAdapter(Enum.class, new CaseEnumAdapter());
         return gsonBuilder.create().fromJson(json, type);
     }
 }

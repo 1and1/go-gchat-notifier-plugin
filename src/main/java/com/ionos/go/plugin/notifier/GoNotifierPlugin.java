@@ -21,6 +21,7 @@ import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
+import javax.security.auth.login.Configuration;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -64,19 +65,6 @@ public class GoNotifierPlugin implements GoPlugin {
     private final ConfigurationProperties configurationProperties;
 
     /** Plugin parameter template is a freemarker template. */
-    private static final String PARAM_TEMPLATE = "template";
-
-    /** Plugin parameter condition is a freemarker template evaluating towards {@code true} or {@code false}. */
-    private static final String PARAM_CONDITION = "condition";
-
-    /** Plugin parameter webhook_url is gchat webhook url. */
-    private static final String PARAM_WEBHOOK_URL = "webhook_url";
-
-    /** Plugin parameter proxy_url is an optional HTTP proxy url to use. */
-    private static final String PARAM_PROXY_URL = "proxy_url";
-
-    /** A JSON field that is used. */
-    private static final String FIELD_VALUE = "value";
 
     private static final String DEFAULT_TEMPLATE = "${stageStatus.pipeline.group}/${stageStatus.pipeline.name}/${stageStatus.pipeline.stage.name} is ${stageStatus.pipeline.stage.state}";
 
@@ -90,25 +78,25 @@ public class GoNotifierPlugin implements GoPlugin {
         LOGGER.info("GoNotifierPlugin is here");
 
         configurationProperties = new ConfigurationProperties();
-        configurationProperties.addConfigurationProperty(PARAM_TEMPLATE, ConfigurationProperty.builder()
+        configurationProperties.addConfigurationProperty(Constants.PARAM_TEMPLATE, ConfigurationProperty.builder()
                 .displayName("EL message template")
                 .defaultValue(DEFAULT_TEMPLATE)
                 .required(true)
                 .displayOrder("0")
                 .build());
-        configurationProperties.addConfigurationProperty(PARAM_CONDITION, ConfigurationProperty.builder()
+        configurationProperties.addConfigurationProperty(Constants.PARAM_CONDITION, ConfigurationProperty.builder()
                 .displayName("EL condition template")
                 .defaultValue(DEFAULT_CONDITION)
                 .required(true)
                 .displayOrder("1")
                 .build());
-        configurationProperties.addConfigurationProperty(PARAM_WEBHOOK_URL, ConfigurationProperty.builder()
+        configurationProperties.addConfigurationProperty(Constants.PARAM_WEBHOOK_URL, ConfigurationProperty.builder()
                 .displayName("Google Chat Webhook URL")
                 .defaultValue(DEFAULT_URL)
                 .required(true)
                 .displayOrder("2")
                 .build());
-        configurationProperties.addConfigurationProperty(PARAM_PROXY_URL, ConfigurationProperty.builder()
+        configurationProperties.addConfigurationProperty(Constants.PARAM_PROXY_URL, ConfigurationProperty.builder()
                 .displayName("Optional HTTP proxy URL, i.e. http://my.proxy:3128/")
                 .required(false)
                 .displayOrder("3")
@@ -118,7 +106,7 @@ public class GoNotifierPlugin implements GoPlugin {
         handlerMap.put("notifications-interested-in", this::handleNotificationsInterestedIn);
         handlerMap.put("stage-status", this::handleStageStatus);
         handlerMap.put("agent-status", this::handleAgentStatus);
-        handlerMap.put("go.plugin-settings.get-configuration", this::handleGetConfigururation);
+        handlerMap.put("go.plugin-settings.get-configuration", this::handleGetConfiguration);
         handlerMap.put("go.plugin-settings.validate-configuration", this::handleValidateConfiguration);
         handlerMap.put("go.plugin-settings.get-view", this::handleGetView);
         handlerMap.put("go.plugin-settings.plugin-settings-changed", this::handlePluginSettingsChanged);
@@ -126,21 +114,18 @@ public class GoNotifierPlugin implements GoPlugin {
         LOGGER.debug("C'tor end");
     }
 
+    private GoPluginApiResponse handleValidateConfiguration(GoPluginApiRequest request) {
+        GoPluginApiRequestHandler goPluginApiRequestHandler = new ValidateConfigurationHandler(getServerInfo());
+        return goPluginApiRequestHandler.handle(request);
+    }
+
     private GoPluginApiResponse handleNotificationsInterestedIn(GoPluginApiRequest request) {
         return success(toJsonString(new NotificationsInterestedInResponse(new String[] {"stage-status"})));
     }
 
     private GoPluginApiResponse handleStageStatus(GoPluginApiRequest request) {
-        StageStatusRequest stageStatus = fromJsonString(request.requestBody(), StageStatusRequest.class);
-        Map<String, String> settings = getSettings();
-        String condition = settings.get(PARAM_CONDITION);
-        String template = settings.get(PARAM_TEMPLATE);
-        String webhookUrl = settings.get(PARAM_WEBHOOK_URL);
-        String proxy = settings.get(PARAM_PROXY_URL);
-
-        StageStatusHandler stageStatusHandler = new StageStatusHandler(condition, template, webhookUrl, proxy);
-        StageAndAgentStatusChangedResponse response = stageStatusHandler.handle(stageStatus, getServerInfo());
-        return success(toJsonString(response));
+        StageStatusHandler stageStatusHandler = new StageStatusHandler(getServerInfo(), getSettings());
+        return stageStatusHandler.handle(request);
     }
 
     private GoPluginApiResponse handlePluginSettingsChanged(GoPluginApiRequest request) {
@@ -152,7 +137,7 @@ public class GoNotifierPlugin implements GoPlugin {
 
     private static final String GET_VIEW_TEMPLATE = "/get-view.html";
 
-    private GoPluginApiResponse handleGetConfigururation(GoPluginApiRequest request) {
+    private GoPluginApiResponse handleGetConfiguration(GoPluginApiRequest request) {
         return success(toJsonString(configurationProperties.getPropertyMap()));
     }
 
@@ -236,97 +221,6 @@ public class GoNotifierPlugin implements GoPlugin {
 
         // parse the response, using a json parser of your choice
         return gson.fromJson(response.responseBody(), Map.class);
-    }
-
-    private DefaultGoPluginApiResponse handleValidateConfiguration(GoPluginApiRequest request) {
-        LOGGER.info("Request: " + request.requestBody());
-        ValidateConfigurationRequest validateRequest = fromJsonString(request.requestBody(), ValidateConfigurationRequest.class);
-        List<ValidateConfigurationResponse> response = new ArrayList<>();
-
-        try {
-            String webhookUrl = validateRequest.getPluginSettings().getOrDefault(PARAM_WEBHOOK_URL, Collections.emptyMap()).get(FIELD_VALUE);
-            new URL(webhookUrl);
-        } catch (MalformedURLException e) {
-            response.add(new ValidateConfigurationResponse(PARAM_WEBHOOK_URL, "Malformed url: " + e.getMessage()));
-        }
-
-        String condition = validateRequest.getPluginSettings().getOrDefault(PARAM_CONDITION, Collections.emptyMap()).get(FIELD_VALUE);
-        if (condition.isEmpty()) {
-            response.add(new ValidateConfigurationResponse(PARAM_CONDITION, PARAM_CONDITION + " is empty"));
-        } else {
-            try {
-                TemplateHandler handler = new TemplateHandler(PARAM_CONDITION, condition);
-                String shouldBeBool = handler.eval(newSampleStageStatusRequest(), getServerInfo());
-                if (!(shouldBeBool.equals("true") || shouldBeBool.equals("false"))) {
-                    response.add(new ValidateConfigurationResponse(PARAM_CONDITION, "Condition should eval to true or false, but evals to: " + shouldBeBool));
-                }
-            }
-            catch (Exception e) {
-                LOGGER.warn("Exception in " + PARAM_CONDITION, e);
-                response.add(new ValidateConfigurationResponse(PARAM_CONDITION, "Malformed condition: " + e.getMessage()));
-            }
-        }
-
-        String template = validateRequest.getPluginSettings().getOrDefault(PARAM_TEMPLATE, Collections.emptyMap()).get(FIELD_VALUE);
-        if (template.isEmpty()) {
-            response.add(new ValidateConfigurationResponse(PARAM_TEMPLATE, PARAM_TEMPLATE + " is empty"));
-        } else {
-            try {
-                TemplateHandler handler = new TemplateHandler("template", template);
-                handler.eval(newSampleStageStatusRequest(), getServerInfo());
-            }
-            catch (Exception e) {
-                LOGGER.warn("Exception in " + PARAM_TEMPLATE, e);
-                response.add(new ValidateConfigurationResponse(PARAM_TEMPLATE, "Malformed template: " + e.getMessage()));
-            }
-        }
-
-        String proxyUrl = validateRequest.getPluginSettings().getOrDefault(PARAM_PROXY_URL, Collections.emptyMap()).get(FIELD_VALUE);
-        if (proxyUrl != null && !proxyUrl.isEmpty()) {
-            try {
-                new URL(proxyUrl);
-            } catch (MalformedURLException e) {
-                response.add(new ValidateConfigurationResponse(PARAM_PROXY_URL, "Malformed url: " + e.getMessage()));
-            }
-        }
-
-        return success(toJsonString(response));
-    }
-
-    /** Creates a sample object for testing the condition and the template with.
-     * */
-    private StageStatusRequest newSampleStageStatusRequest() {
-        StageStatusRequest response = new StageStatusRequest();
-        StageStatusRequest.Pipeline pipeline = new StageStatusRequest.Pipeline();
-        StageStatusRequest.Stage stage = new StageStatusRequest.Stage();
-        StageStatusRequest.Job job = new StageStatusRequest.Job();
-
-        job.setName("jobname");
-        job.setAssignTime(ZonedDateTime.now());
-        job.setCompleteTime(ZonedDateTime.now());
-        job.setScheduleTime(ZonedDateTime.now());
-        job.setState("failed");
-        job.setResult("cancelled");
-
-        stage.setName("stagename");
-        stage.setApprovedBy("John Doe");
-        stage.setCounter("1");
-        stage.setPreviousStageCounter(0);
-        stage.setApprovalType("foo");
-        stage.setState("failed");
-        stage.setResult("cancelled");
-        stage.setCreateTime(ZonedDateTime.now());
-        stage.setJobs(new StageStatusRequest.Job[] {job});
-
-        pipeline.setStage(stage);
-        pipeline.setName("pipelinename");
-        pipeline.setCounter("0");
-        pipeline.setGroup("pipelinegroup");
-        pipeline.setBuildCause(new ArrayList<>());
-
-        response.setPipeline(pipeline);
-
-        return response;
     }
 
     @Override

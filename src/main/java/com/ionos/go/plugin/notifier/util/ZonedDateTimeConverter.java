@@ -35,8 +35,6 @@ class ZonedDateTimeConverter implements JsonSerializer<ZonedDateTime>, JsonDeser
         if (jsonElement.getAsString() == null || jsonElement.getAsString().isEmpty()) {
             return null;
         }
-        //No timezone is provided in message -> need to add the default
-        final LocalDateTime withoutTimezone = LocalDateTime.parse(jsonElement.getAsString(), dateTimeFormatter);
-        return ZonedDateTime.of(withoutTimezone, ZoneId.systemDefault());
+        return ZonedDateTime.parse(jsonElement.getAsString(), dateTimeFormatter);
     }
 }

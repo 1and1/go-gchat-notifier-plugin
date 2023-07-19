@@ -1,66 +1,84 @@
 package com.ionos.go.plugin.notifier;
 
 import com.ionos.go.plugin.notifier.gchat.GoogleChatWebhookSender;
+import com.ionos.go.plugin.notifier.message.GoPluginApiRequestHandler;
 import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
 import com.ionos.go.plugin.notifier.message.outgoing.StageAndAgentStatusChangedResponse;
 import com.ionos.go.plugin.notifier.template.TemplateHandler;
+import com.ionos.go.plugin.notifier.util.Helper;
 import com.thoughtworks.go.plugin.api.logging.Logger;
+import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
+import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.TemplateException;
 import lombok.NonNull;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class StageStatusHandler {
+import static com.ionos.go.plugin.notifier.util.JsonUtil.fromJsonString;
+import static com.ionos.go.plugin.notifier.util.JsonUtil.toJsonString;
+import static com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse.success;
+
+public class StageStatusHandler implements GoPluginApiRequestHandler {
 
     private static final Logger LOGGER = Logger.getLoggerFor(StageStatusHandler.class);
 
-    private final String condition;
-    private final String template;
-    private final String webhookUrl;
-    private final String proxyUrl;
+    private final Map<String, String> serverInfo;
 
-    public StageStatusHandler(@NonNull String condition, @NonNull String template, @NonNull String webhookUrl, String proxyUrl) {
-        this.condition = condition;
-        this.template = template;
-        this.webhookUrl = webhookUrl;
-        this.proxyUrl = proxyUrl;
+    private final Map<String, String> settings;
+
+    StageStatusHandler(@NonNull Map<String, String> serverInfo, @NonNull Map<String, String> settings) {
+        this.serverInfo = serverInfo;
+        this.settings = settings;
     }
 
-    public StageAndAgentStatusChangedResponse handle(@NonNull StageStatusRequest stageStatusRequest, @NonNull Map<String, String> serverInfo) {
+    @Override
+    public GoPluginApiResponse handle(GoPluginApiRequest request) {
+        Helper.debugDump(request.requestBody());
 
-        String instanceTemplate;
+        StageStatusRequest stageStatus = fromJsonString(request.requestBody(), StageStatusRequest.class);
+        StageAndAgentStatusChangedResponse response = new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.success);;
+        String condition = settings.get(Constants.PARAM_CONDITION);
+        String template = settings.get(Constants.PARAM_TEMPLATE);
+        String webhookUrl = settings.get(Constants.PARAM_WEBHOOK_URL);
+        String proxyUrl = settings.get(Constants.PARAM_PROXY_URL);
+
+        String instanceTemplate = null;
+        Helper.debugDump(stageStatus);
+        boolean conditionEval;
 
         try {
             TemplateHandler conditionHandler = new TemplateHandler("condition", condition);
-            String conditionValue = conditionHandler.eval(stageStatusRequest, serverInfo);
+            String conditionValue = conditionHandler.eval(stageStatus, serverInfo);
             LOGGER.debug("Instance condition: " + conditionValue);
 
+            conditionEval = Boolean.parseBoolean(conditionValue);
             if (!Boolean.parseBoolean(conditionValue)) {
                 LOGGER.info("Condition '" + condition + "' is false, not notifying");
-                return new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.success);
             }
         }
         catch (TemplateException | IOException e) {
             LOGGER.warn("Exception for condition " + condition, e);
+            conditionEval = false; // default to false
+            response = new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.failure, "Condition problem: " + e.getMessage());
         }
 
-        try {
-            TemplateHandler templateHandler = new TemplateHandler("template", template);
-            instanceTemplate = templateHandler.eval(stageStatusRequest, serverInfo);
-            LOGGER.debug("Instance template: " + instanceTemplate);
+        if (conditionEval) {
+            try {
+                TemplateHandler templateHandler = new TemplateHandler("template", template);
+                instanceTemplate = templateHandler.eval(stageStatus, serverInfo);
+                LOGGER.debug("Instance template: " + instanceTemplate);
+                GoogleChatWebhookSender googleChatWebhookSender = new GoogleChatWebhookSender(proxyUrl);
+                try {
+                    googleChatWebhookSender.send(webhookUrl, instanceTemplate);
+                } catch (IOException e) {
+                    response = new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.failure, "GChat sending problem: " + e.getMessage());
+                }
+            } catch (TemplateException | IOException e) {
+                LOGGER.warn("Exception for template " + condition, e);
+                response = new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.failure, "Template problem: " + e.getMessage());
+            }
         }
-        catch (TemplateException | IOException e) {
-            LOGGER.warn("Exception for template " + condition, e);
-            instanceTemplate = "ERROR: Template instance had an error: " + e.getMessage();
-        }
-
-        GoogleChatWebhookSender googleChatWebhookSender = new GoogleChatWebhookSender(proxyUrl);
-        try {
-            googleChatWebhookSender.send(webhookUrl, instanceTemplate);
-            return new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.success);
-        } catch (IOException e) {
-            return new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.failure, e.getMessage());
-        }
+        return success(toJsonString(response));
     }
 }
