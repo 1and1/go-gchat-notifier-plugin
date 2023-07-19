@@ -84,8 +84,11 @@ The following configuration items exist in the plugin:
 
 ### Sample Configuration
 
-In the following I want to give a good
-sample for a configuration:
+In the following is a usable sample for a configuration.
+The configuration only notifies on stage states which are in
+state 'Failed´ and sends a chat message that has a
+direct deep link into your GoCD instances console of the
+stage run.
 
 #### GChat template (freemarker)
 
