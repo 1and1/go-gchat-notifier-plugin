@@ -161,7 +161,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.6.0</version>
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/plugin.xml</descriptor>
@@ -186,7 +186,7 @@
           <dependency>
             <groupId>de.sfuhrm</groupId>
             <artifactId>message-digest-assembly-handler</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
           </dependency>
         </dependencies>
       </plugin>
