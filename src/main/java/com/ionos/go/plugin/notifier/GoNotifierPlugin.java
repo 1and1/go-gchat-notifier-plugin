@@ -63,10 +63,20 @@ public class GoNotifierPlugin implements GoPlugin {
 
     private final ConfigurationProperties configurationProperties;
 
+    /** Plugin parameter template is a freemarker template. */
     private static final String PARAM_TEMPLATE = "template";
+
+    /** Plugin parameter condition is a freemarker template evaluating towards {@code true} or {@code false}. */
     private static final String PARAM_CONDITION = "condition";
+
+    /** Plugin parameter webhook_url is gchat webhook url. */
     private static final String PARAM_WEBHOOK_URL = "webhook_url";
+
+    /** Plugin parameter proxy_url is an optional HTTP proxy url to use. */
     private static final String PARAM_PROXY_URL = "proxy_url";
+
+    /** A JSON field that is used. */
+    private static final String FIELD_VALUE = "value";
 
     private static final String DEFAULT_TEMPLATE = "${stageStatus.pipeline.group}/${stageStatus.pipeline.name}/${stageStatus.pipeline.stage.name} is ${stageStatus.pipeline.stage.state}";
 
@@ -234,18 +244,18 @@ public class GoNotifierPlugin implements GoPlugin {
         List<ValidateConfigurationResponse> response = new ArrayList<>();
 
         try {
-            String webhookUrl = validateRequest.getPluginSettings().getOrDefault(PARAM_WEBHOOK_URL, Collections.emptyMap()).get("value");
+            String webhookUrl = validateRequest.getPluginSettings().getOrDefault(PARAM_WEBHOOK_URL, Collections.emptyMap()).get(FIELD_VALUE);
             new URL(webhookUrl);
         } catch (MalformedURLException e) {
             response.add(new ValidateConfigurationResponse(PARAM_WEBHOOK_URL, "Malformed url: " + e.getMessage()));
         }
 
-        String condition = validateRequest.getPluginSettings().getOrDefault(PARAM_CONDITION, Collections.emptyMap()).get("value");
+        String condition = validateRequest.getPluginSettings().getOrDefault(PARAM_CONDITION, Collections.emptyMap()).get(FIELD_VALUE);
         if (condition.isEmpty()) {
             response.add(new ValidateConfigurationResponse(PARAM_CONDITION, PARAM_CONDITION + " is empty"));
         } else {
             try {
-                TemplateHandler handler = new TemplateHandler("condition", condition);
+                TemplateHandler handler = new TemplateHandler(PARAM_CONDITION, condition);
                 String shouldBeBool = handler.eval(newSampleStageStatusRequest(), getServerInfo());
                 if (!(shouldBeBool.equals("true") || shouldBeBool.equals("false"))) {
                     response.add(new ValidateConfigurationResponse(PARAM_CONDITION, "Condition should eval to true or false, but evals to: " + shouldBeBool));
@@ -257,7 +267,7 @@ public class GoNotifierPlugin implements GoPlugin {
             }
         }
 
-        String template = validateRequest.getPluginSettings().getOrDefault(PARAM_TEMPLATE, Collections.emptyMap()).get("value");
+        String template = validateRequest.getPluginSettings().getOrDefault(PARAM_TEMPLATE, Collections.emptyMap()).get(FIELD_VALUE);
         if (template.isEmpty()) {
             response.add(new ValidateConfigurationResponse(PARAM_TEMPLATE, PARAM_TEMPLATE + " is empty"));
         } else {
@@ -271,7 +281,7 @@ public class GoNotifierPlugin implements GoPlugin {
             }
         }
 
-        String proxyUrl = validateRequest.getPluginSettings().getOrDefault(PARAM_PROXY_URL, Collections.emptyMap()).get("value");
+        String proxyUrl = validateRequest.getPluginSettings().getOrDefault(PARAM_PROXY_URL, Collections.emptyMap()).get(FIELD_VALUE);
         if (proxyUrl != null && !proxyUrl.isEmpty()) {
             try {
                 new URL(proxyUrl);
