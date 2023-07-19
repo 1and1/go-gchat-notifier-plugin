@@ -54,7 +54,7 @@ See also [Google Workspace documentation](https://developers.google.com/chat/how
 
 ### Configuration
 
-The following is a screenshot of the configuration dialoge of version 0.5.0:
+The following is a screenshot of the configuration dialogue of version 0.5.0:
 
 ![Plugin Config screenshot](img/plugin-config.png)
 
