@@ -1,0 +1,104 @@
+# This workflow is an integration test that
+# * builds the plugin and then
+# * starts a GoCD docker container with the plugin mounted.
+#
+# The test only takes a look whether GoCD
+# recognizes the plugin correctly.
+name: Integration Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  integration_build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'adopt'
+        java-version: 11
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+    - uses: actions/upload-artifact@v3
+      with:
+        name: plugin
+        path: target/go-gchat-notifier-plugin.jar
+
+  # integration test by downloading the plugin via curl
+  # at startup
+  integration_env:
+    needs: integration_build
+    runs-on: ubuntu-latest
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    strategy:
+      matrix:
+        include:
+          - goversion: v22.3.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v22.2.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v22.1.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v21.4.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v21.3.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v21.2.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v21.1.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v20.10.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v20.9.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v20.8.0
+            accept: application/vnd.go.cd.v7+json
+          - goversion: v20.7.0
+            accept: application/vnd.go.cd.v7+json
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download the plugin
+      uses: actions/download-artifact@v3
+      with:
+        name: plugin
+    - name: Install docker compose
+      run: |
+        sudo apt-get update && sudo apt-get install --yes docker-compose
+    - name: Copy the plugin to /tmp for docker compose
+      run: |
+        cp go-gchat-notifier-plugin.jar /tmp
+        pwd
+        ls -al
+
+    - name: Start the containers
+      working-directory: ./.github/integration-helper/docker-compose
+      run: |
+        pwd
+        ls -al
+        echo "goversion=${{ matrix.goversion }}" > .env
+        docker-compose up --detach
+    - name: Wait and get the plugin info via API
+      run: |
+        bash ./.github/integration-helper/wait-download-plugin_info.sh ${{ matrix.accept }} ${{ matrix.goversion }}
+    - uses: actions/upload-artifact@v3
+      with:
+        name: output-json-${{ matrix.goversion }}
+        path: plugin_info.json
+    - name: Kill the containers
+      working-directory: ./.github/integration-helper/docker-compose
+      run: |
+        docker-compose down
+    - name: Show container logs
+      working-directory: ./.github/integration-helper/docker-compose
+      run: |
+        docker-compose logs gocd-server
+        docker-compose logs nginx
+    - name: Test the JSON document for expected values
+      run: |
+        bash ./.github/integration-helper/check-plugin_info.sh plugin_info.json || exit 1

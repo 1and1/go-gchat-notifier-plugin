@@ -1,0 +1,20 @@
+version: "3.3"
+services:
+  gocd-server:
+    container_name: gocd-server
+    image: gocd/gocd-server:${goversion}
+    ports:
+      - "8153:8153"
+    environment:
+      GOCD_PLUGIN_INSTALL_go-gchat-notifier: http://nginx:80/go-gchat-notifier-plugin.jar
+    links:
+      - nginx
+  nginx:
+    container_name: nginx
+    image: nginx:1.19.9
+    expose:
+      - "80"
+    # the file "go-gchat-notifier-plugin.jar" is expected
+    # to be located in /tmp
+    volumes:
+      - /tmp:/usr/share/nginx/html
