@@ -71,7 +71,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13.1</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -183,7 +183,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.6.0</version>
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/plugin.xml</descriptor>
@@ -248,7 +248,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>3.1.0</version>
             <configuration>
               <keyname>0AC5A45E91FA93DA25380017B0D87B063EAD41F1</keyname>
             </configuration>
