@@ -1,0 +1,52 @@
+{
+   "pipeline" : {
+      "build-cause" : [
+         {
+            "changed" : true,
+            "material" : {
+               "fingerprint" : "8f4ca9be1cc118c32c73783b83285b840e0c2feff12fb7abdb62e23199ea73a2",
+               "git-configuration" : {
+                  "branch" : "master",
+                  "shallow-clone" : false,
+                  "url" : "https://github.com/1and1/go-gchat-notifier-plugin.git"
+               },
+               "type" : "git"
+            },
+            "modifications" : [
+               {
+                  "data" : {},
+                  "modified-time" : "2023-07-19T13:15:34.000+0000",
+                  "revision" : "d7b2629fda5048b8eea42b1bee968a8fd949eadd"
+               }
+            ]
+         }
+      ],
+      "counter" : "8",
+      "group" : "Github",
+      "label" : "d7b2629fda5048b8eea42b1bee968a8fd949eadd",
+      "name" : "go-gchat-notifier-plugin",
+      "stage" : {
+         "approval-type" : "success",
+         "approved-by" : "changes",
+         "counter" : "1",
+         "create-time" : "2023-07-19T13:16:56.571+0000",
+         "jobs" : [
+            {
+               "agent-uuid" : "51549723-2fc3-4965-8657-4d5785d86611",
+               "assign-time" : "2023-07-19T13:16:59.097+0000",
+               "complete-time" : "2023-07-19T13:17:09.671+0000",
+               "name" : "Deploy",
+               "result" : "Passed",
+               "schedule-time" : "2023-07-19T13:16:56.570+0000",
+               "state" : "Completed"
+            }
+         ],
+         "last-transition-time" : "2023-07-19T13:17:09.671+0000",
+         "name" : "Snapshot",
+         "previous-stage-counter" : 1,
+         "previous-stage-name" : "Test",
+         "result" : "Passed",
+         "state" : "Passed"
+      }
+   }
+}

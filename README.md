@@ -71,7 +71,8 @@ The following configuration items exist in the plugin:
   to the following objects:
   * `stageStatus`: The original stage status request from the
     GoCD server. Can be used to render some information
-    about the pipeline.
+    about the pipeline. See [this json](doc/stageStatus.json)
+    for a sample on the document structure.
   * `serverInfo`: The server info object that contains the
     servers address(es). Can be used to render some
     URLs towards the console.
