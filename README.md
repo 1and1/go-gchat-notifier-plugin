@@ -11,14 +11,16 @@ Go GChat Notifier Plugin
 A GoCD notification plugin for the
 [Go CD](http://www.go.cd/) continuous integration server.
 
+A chat message can look like this:
+
 ![GChat screenshot](img/gchat.png)
 
 The plugin is very customizable by using
 [Apache Freemarker](https://freemarker.apache.org/index.html)
 as an approach to formulate
 
-* The condition when to send messages.
-* The chat message body themselves.
+* the condition when to send messages.
+* the chat message body themselves.
 
 ### Requirements
 
