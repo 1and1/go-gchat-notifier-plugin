@@ -68,7 +68,8 @@ The following configuration items exist in the plugin:
 * GChat template (freemarker):* A
   [freemarker format](https://freemarker.apache.org/docs/dgui_template_overallstructure.html) template
   for the chat message body. The template has access
-  to the following objects:
+  to the following objects that are registered
+  in the templates context:
   * `stageStatus`: The original stage status request from the
     GoCD server. Can be used to render some information
     about the pipeline.
