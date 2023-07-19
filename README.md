@@ -4,6 +4,8 @@ Go GChat Notifier Plugin
 A GoCD notification plugin for the
 [Go CD](http://www.go.cd/) continuous integration server.
 
+![GChat screenshot](img/gchat.png)
+
 The plugin is very customizable by using
 [Apache Freemarker](https://freemarker.apache.org/index.html)
 as an approach to formulate
