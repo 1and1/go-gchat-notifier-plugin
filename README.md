@@ -54,6 +54,10 @@ See also [Google Workspace documentation](https://developers.google.com/chat/how
 
 ### Configuration
 
+The following is a screenshot of the configuration dialoge of version 0.5.0:
+
+![Plugin Config screenshot](img/plugin-config.png)
+
 The following configuration items exist in the plugin:
 
 * GChat template (freemarker):* A
