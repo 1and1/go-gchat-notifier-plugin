@@ -73,16 +73,51 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
         ValidateConfigurationRequest validateRequest = fromJsonString(request.requestBody(), ValidateConfigurationRequest.class);
         List<ValidateConfigurationResponse> response = new ArrayList<>();
 
-        validateWebhookUrl(validateRequest, response);
-        validateCondition(validateRequest, response);
-        validateTemplate(validateRequest, response);
-        validateProxyUrl(validateRequest, response);
+        if (validateRequest.getPluginSettings() != null) {
+            if (validateNonNull(validateRequest, response, Constants.PARAM_WEBHOOK_URL)) {
+                validateWebhookUrl(validateRequest, response);
+            }
+            if (validateNonNull(validateRequest, response, Constants.PARAM_CONDITION)) {
+                validateCondition(validateRequest, response);
+            }
+            if (validateNonNull(validateRequest, response, Constants.PARAM_TEMPLATE)) {
+                validateTemplate(validateRequest, response);
+            }
+            if (validateNonNull(validateRequest, response, Constants.PARAM_PROXY_URL)) {
+                validateProxyUrl(validateRequest, response);
+            }
+        } else {
+            return DefaultGoPluginApiResponse.error("Illegal request");
+        }
 
         return success(toJsonString(response));
     }
 
+    private static boolean validateNonNull(ValidateConfigurationRequest validateRequest, List<ValidateConfigurationResponse> response, String parameterName) {
+        if (validateRequest != null) {
+            if (validateRequest.getPluginSettings() != null) {
+                Map<String, String> valueMap = validateRequest.getPluginSettings().get(parameterName);
+                if (valueMap != null) {
+                    if (valueMap.get(Constants.FIELD_VALUE) != null) {
+                        return true;
+                    } else {
+                        response.add(new ValidateConfigurationResponse(parameterName, "Request pluginSettings parameter '"+parameterName+"' value is missing"));
+                    }
+                } else {
+                    response.add(new ValidateConfigurationResponse(parameterName, "Request pluginSettings parameter '"+parameterName+"' is null"));
+                }
+            } else {
+                response.add(new ValidateConfigurationResponse(parameterName, "Request pluginSettings is null"));
+            }
+        } else {
+            response.add(new ValidateConfigurationResponse(parameterName, "Request is null"));
+        }
+        return false;
+    }
+
+
     private static void validateProxyUrl(ValidateConfigurationRequest validateRequest, List<ValidateConfigurationResponse> response) {
-        String proxyUrl = validateRequest.getPluginSettings().getOrDefault(Constants.PARAM_PROXY_URL, Collections.emptyMap()).get(Constants.FIELD_VALUE);
+        String proxyUrl = validateRequest.getPluginSettings().get(Constants.PARAM_PROXY_URL).get(Constants.FIELD_VALUE);
         if (proxyUrl != null && !proxyUrl.isEmpty()) {
             try {
                 new URL(proxyUrl);
@@ -93,7 +128,7 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
     }
 
     private void validateTemplate(ValidateConfigurationRequest validateRequest, List<ValidateConfigurationResponse> response) {
-        String template = validateRequest.getPluginSettings().getOrDefault(Constants.PARAM_TEMPLATE, Collections.emptyMap()).get(Constants.FIELD_VALUE);
+        String template = validateRequest.getPluginSettings().get(Constants.PARAM_TEMPLATE).get(Constants.FIELD_VALUE);
         if (template.isEmpty()) {
             response.add(new ValidateConfigurationResponse(Constants.PARAM_TEMPLATE, Constants.PARAM_TEMPLATE + " is empty"));
         } else {
@@ -109,7 +144,7 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
     }
 
     private void validateCondition(ValidateConfigurationRequest validateRequest, List<ValidateConfigurationResponse> response) {
-        String condition = validateRequest.getPluginSettings().getOrDefault(Constants.PARAM_CONDITION, Collections.emptyMap()).get(Constants.FIELD_VALUE);
+        String condition = validateRequest.getPluginSettings().get(Constants.PARAM_CONDITION).get(Constants.FIELD_VALUE);
         if (condition.isEmpty()) {
             response.add(new ValidateConfigurationResponse(Constants.PARAM_CONDITION, Constants.PARAM_CONDITION + " is empty"));
         } else {
@@ -129,9 +164,9 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
 
     private static void validateWebhookUrl(ValidateConfigurationRequest validateRequest, List<ValidateConfigurationResponse> response) {
         try {
-            String webhookUrl = validateRequest.getPluginSettings().getOrDefault(Constants.PARAM_WEBHOOK_URL, Collections.emptyMap()).get(Constants.FIELD_VALUE);
+            String webhookUrl = validateRequest.getPluginSettings().get(Constants.PARAM_WEBHOOK_URL).get(Constants.FIELD_VALUE);
             new URL(webhookUrl);
-        } catch (MalformedURLException e) {
+        } catch (NullPointerException | MalformedURLException e) {
             response.add(new ValidateConfigurationResponse(Constants.PARAM_WEBHOOK_URL, "Malformed url: " + e.getMessage()));
         }
     }

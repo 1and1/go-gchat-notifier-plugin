@@ -1,6 +1,8 @@
 package com.ionos.go.plugin.notifier;
 
 import com.google.gson.Gson;
+import com.ionos.go.plugin.notifier.message.incoming.ValidateConfigurationRequest;
+import com.ionos.go.plugin.notifier.message.outgoing.ValidateConfigurationResponse;
 import com.ionos.go.plugin.notifier.util.Helper;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.logging.Logger;
@@ -100,4 +102,24 @@ public class GoNotifierPluginTest {
         assertTrue("contains a config key", map.containsKey(Constants.PARAM_WEBHOOK_URL));
     }
 
+    @Test
+    public void testHandleValidateConfigurationWithBadRequest() {
+        ValidateConfigurationRequest request = new ValidateConfigurationRequest();
+        GoPluginApiResponse response = goNotifierPlugin.handle(GoCdObjects.request(Constants.PLUGIN_VALIDATE_CONFIGURATION, gson.toJson(request)));
+        assertNotNull(response);
+        assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.responseCode());
+        assertEquals(Collections.emptyMap(), response.responseHeaders());
+    }
+
+    @Test
+    public void testHandleValidateConfigurationWithGoodRequestMultipleErrors() {
+        ValidateConfigurationRequest request = new ValidateConfigurationRequest();
+        request.setPluginSettings(new HashMap<>());
+        GoPluginApiResponse response = goNotifierPlugin.handle(GoCdObjects.request(Constants.PLUGIN_VALIDATE_CONFIGURATION, gson.toJson(request)));
+        assertNotNull(response);
+        assertEquals(HttpStatus.SC_OK, response.responseCode());
+        assertEquals(Collections.emptyMap(), response.responseHeaders());
+        ValidateConfigurationResponse[] validateConfigurationResponses = gson.fromJson(response.responseBody(), ValidateConfigurationResponse[].class);
+        assertEquals(goNotifierPlugin.getConfigurationProperties().getPropertyMap().size(), validateConfigurationResponses.length);
+    }
 }

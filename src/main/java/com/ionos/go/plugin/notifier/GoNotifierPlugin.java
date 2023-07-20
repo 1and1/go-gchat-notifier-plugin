@@ -16,6 +16,8 @@ import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.hc.core5.http.HttpStatus;
 
 import java.io.IOException;
@@ -53,6 +55,7 @@ public class GoNotifierPlugin implements GoPlugin {
     /** The go application accessor. */
     private GoApplicationAccessor goApplicationAccessor;
 
+    @Getter(AccessLevel.MODULE)
     private final ConfigurationProperties configurationProperties;
 
     /** Plugin parameter template is a freemarker template. */

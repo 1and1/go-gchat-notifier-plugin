@@ -3,6 +3,7 @@ package com.ionos.go.plugin.notifier.message.incoming;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
@@ -14,5 +15,6 @@ public class ValidateConfigurationRequest {
     @Expose
     @SerializedName("plugin-settings")
     @Getter
+    @Setter
     private Map<String, Map<String, String>> pluginSettings;
 }
