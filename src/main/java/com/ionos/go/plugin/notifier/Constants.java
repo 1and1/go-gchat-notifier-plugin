@@ -14,4 +14,15 @@ public class Constants {
 
     /** A JSON field that is used. */
     static final String FIELD_VALUE = "value";
+
+    static final String PLUGIN_SETTINGS_CHANGED = "go.plugin-settings.plugin-settings-changed";
+    static final String PLUGIN_NOTIFICATIONS_INTERESTED_IN = "notifications-interested-in";
+    static final String PLUGIN_STAGE_STATUS = "stage-status";
+    static final String PLUGIN_AGENT_STATUS = "agent-status";
+    static final String PLUGIN_GET_CONFIGURATION = "go.plugin-settings.get-configuration";
+    static final String PLUGIN_VALIDATE_CONFIGURATION = "go.plugin-settings.validate-configuration";
+    static final String PLUGIN_GET_VIEW = "go.plugin-settings.get-view";
+    static final String SERVER_PLUGIN_SETTINGS_GET = "go.processor.plugin-settings.get";
+    static final String SERVER_SERVER_INFO_GET = "go.processor.server-info.get";
+
 }

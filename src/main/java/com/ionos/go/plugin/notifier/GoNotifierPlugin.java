@@ -4,12 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ionos.go.plugin.notifier.message.*;
 import com.ionos.go.plugin.notifier.message.incoming.AgentStatusRequest;
-import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
-import com.ionos.go.plugin.notifier.message.incoming.ValidateConfigurationRequest;
 import com.ionos.go.plugin.notifier.message.outgoing.NotificationsInterestedInResponse;
-import com.ionos.go.plugin.notifier.message.outgoing.StageAndAgentStatusChangedResponse;
-import com.ionos.go.plugin.notifier.message.outgoing.ValidateConfigurationResponse;
-import com.ionos.go.plugin.notifier.template.TemplateHandler;
+import com.ionos.go.plugin.notifier.util.Helper;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
@@ -20,18 +16,13 @@ import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import org.apache.hc.core5.http.HttpStatus;
 
-import javax.security.auth.login.Configuration;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -103,13 +94,13 @@ public class GoNotifierPlugin implements GoPlugin {
                 .build());
 
         handlerMap = new HashMap<>();
-        handlerMap.put("notifications-interested-in", this::handleNotificationsInterestedIn);
-        handlerMap.put("stage-status", this::handleStageStatus);
-        handlerMap.put("agent-status", this::handleAgentStatus);
-        handlerMap.put("go.plugin-settings.get-configuration", this::handleGetConfiguration);
-        handlerMap.put("go.plugin-settings.validate-configuration", this::handleValidateConfiguration);
-        handlerMap.put("go.plugin-settings.get-view", this::handleGetView);
-        handlerMap.put("go.plugin-settings.plugin-settings-changed", this::handlePluginSettingsChanged);
+        handlerMap.put(Constants.PLUGIN_NOTIFICATIONS_INTERESTED_IN, this::handleNotificationsInterestedIn);
+        handlerMap.put(Constants.PLUGIN_STAGE_STATUS, this::handleStageStatus);
+        handlerMap.put(Constants.PLUGIN_AGENT_STATUS, this::handleAgentStatus);
+        handlerMap.put(Constants.PLUGIN_GET_CONFIGURATION, this::handleGetConfiguration);
+        handlerMap.put(Constants.PLUGIN_VALIDATE_CONFIGURATION, this::handleValidateConfiguration);
+        handlerMap.put(Constants.PLUGIN_GET_VIEW, this::handleGetView);
+        handlerMap.put(Constants.PLUGIN_SETTINGS_CHANGED, this::handlePluginSettingsChanged);
 
         LOGGER.debug("C'tor end");
     }
@@ -143,12 +134,12 @@ public class GoNotifierPlugin implements GoPlugin {
 
     private GoPluginApiResponse handleAgentStatus(GoPluginApiRequest request) {
         AgentStatusRequest agentStatus = fromJsonString(request.requestBody(), AgentStatusRequest.class);
-        return success(toJsonString(new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.failure, "i did oops")));
+        return new DefaultGoPluginApiResponse(HttpStatus.SC_NOT_IMPLEMENTED, "Not Implemented");
     }
 
     private GoPluginApiResponse handleGetView(GoPluginApiRequest request) {
         try {
-            String template = readResource(GET_VIEW_TEMPLATE);
+            String template = Helper.readResource(GET_VIEW_TEMPLATE);
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("template", template);
             DefaultGoPluginApiResponse defaultGoPluginApiResponse = new DefaultGoPluginApiResponse(200);
@@ -160,24 +151,11 @@ public class GoNotifierPlugin implements GoPlugin {
         }
     }
 
-    private String readResource(String resource) throws IOException {
-        try (InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(resource)), StandardCharsets.UTF_8)) {
-            StringBuilder sb = new StringBuilder();
-            char[] buffer = new char[256];
-            int length;
-            while ((length = reader.read(buffer)) >= 0) {
-                sb.append(buffer, 0, length);
-            }
-            LOGGER.debug("Read resource with length " + sb.length());
-            return sb.toString();
-        }
-    }
-
     private Map<String, String> getSettings() {
         Gson gson = new Gson();
         // create a request
         DefaultGoApiRequest request = new DefaultGoApiRequest(
-                "go.processor.plugin-settings.get",
+                Constants.SERVER_PLUGIN_SETTINGS_GET,
                 "1.0",
                 pluginIdentifier()
         );
@@ -202,7 +180,7 @@ public class GoNotifierPlugin implements GoPlugin {
         Gson gson = new Gson();
         // create a request
         DefaultGoApiRequest request = new DefaultGoApiRequest(
-                "go.processor.server-info.get",
+                Constants.SERVER_SERVER_INFO_GET,
                 "1.0",
                 pluginIdentifier()
         );

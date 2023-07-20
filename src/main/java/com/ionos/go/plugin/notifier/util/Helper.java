@@ -51,8 +51,8 @@ public class Helper {
         }
     }
 
-    private String readResource(String resource) throws IOException {
-        try (InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(resource)), StandardCharsets.UTF_8)) {
+    public static String readResource(String resource) throws IOException {
+        try (InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(Helper.class.getResourceAsStream(resource)), StandardCharsets.UTF_8)) {
             StringBuilder sb = new StringBuilder();
             char[] buffer = new char[256];
             int length;

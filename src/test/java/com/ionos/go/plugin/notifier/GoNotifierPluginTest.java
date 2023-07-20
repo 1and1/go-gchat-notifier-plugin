@@ -1,49 +1,56 @@
 package com.ionos.go.plugin.notifier;
 
-import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
+import com.google.gson.Gson;
+import com.ionos.go.plugin.notifier.util.Helper;
+import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
+import com.thoughtworks.go.plugin.api.logging.Logger;
+import com.thoughtworks.go.plugin.api.request.GoApiRequest;
+import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.AfterClass;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 public class GoNotifierPluginTest {
+    private static final Logger LOGGER = Logger.getLoggerFor(GoNotifierPluginTest.class);
 
-    private static EmbeddedHttpServer embeddedHttpServer;
-    private static int embeddedHttpPort;
     private GoNotifierPlugin goNotifierPlugin;
 
-    @BeforeClass
-    public static void setUpLocalWebServer() {
-        embeddedHttpServer = new EmbeddedHttpServer().withPath(new File("src/test/resources/web"));
-        embeddedHttpServer.start();
-        embeddedHttpPort = embeddedHttpServer.getRunningPort();
-    }
+    private Gson gson;
 
-    @AfterClass
-    public static void stopLocalWebServer() {
-        embeddedHttpServer.stop();
-    }
+    private Map<String, String> serverInfo = new HashMap<>();
+    private Map<String, String> pluginSettings = new HashMap<>();
 
     @Before
-    public void setupPlugin() {
+    public void setupPlugin() throws IOException {
         this.goNotifierPlugin = new GoNotifierPlugin();
-    }
-
-    @Test
-    public void testHandleNotificationsInterestedIn() throws Exception {
-        // request get conf
-        GoPluginApiResponse response = goNotifierPlugin.handle(request("notifications-interested-in", null));
-        assertNotNull(response);
-        assertEquals(200, response.responseCode());
-        assertEquals(Collections.emptyMap(), response.responseHeaders());
-        assertEquals("{\"notifications\":[\"stage-status\"]}", response.responseBody());
+        this.goNotifierPlugin.initializeGoApplicationAccessor(new GoApplicationAccessor() {
+            @Override
+            public GoApiResponse submit(GoApiRequest goApiRequest) {
+                LOGGER.debug("Server request: " + goApiRequest.api());
+                if (goApiRequest.api().equals(Constants.SERVER_SERVER_INFO_GET)) {
+                    return GoCdObjects.apiResponse(HttpStatus.SC_OK, Collections.emptyMap(), gson.toJson(serverInfo));
+                }
+                if (goApiRequest.api().equals(Constants.SERVER_PLUGIN_SETTINGS_GET)) {
+                    return GoCdObjects.apiResponse(HttpStatus.SC_OK, Collections.emptyMap(), gson.toJson(pluginSettings));
+                }
+                LOGGER.error("Unknown server request: " + goApiRequest.api());
+                return GoCdObjects.apiResponse(HttpStatus.SC_NOT_IMPLEMENTED, Collections.emptyMap(), "Not implemented, bro!");
+            }
+        });
+        this.gson = new Gson();
+        this.serverInfo = gson.fromJson(Helper.readResource("/serverInfo.json"), Map.class);
     }
 
     @Test
@@ -52,38 +59,45 @@ public class GoNotifierPluginTest {
         assertTrue(goNotifierPlugin.pluginIdentifier().getSupportedExtensionVersions().contains("4.0"));
     }
 
-    private static GoPluginApiRequest request(final String requestName, final String requestBody) {
-        return new GoPluginApiRequest() {
-            @Override
-            public String extension() {
-                return null;
-            }
+    @Test
+    public void testHandleNotificationsInterestedIn() throws Exception {
+        // request get conf
+        GoPluginApiResponse response = goNotifierPlugin.handle(GoCdObjects.request(Constants.PLUGIN_NOTIFICATIONS_INTERESTED_IN, null));
+        assertNotNull(response);
+        assertEquals(HttpStatus.SC_OK, response.responseCode());
+        assertEquals(Collections.emptyMap(), response.responseHeaders());
+        assertEquals("{\"notifications\":[\"stage-status\"]}", response.responseBody());
+    }
 
-            @Override
-            public String extensionVersion() {
-                return null;
-            }
+    @Test
+    public void testHandleGetView() {
+        GoPluginApiResponse response = goNotifierPlugin.handle(GoCdObjects.request(Constants.PLUGIN_GET_VIEW, null));
+        assertNotNull(response);
+        assertEquals(HttpStatus.SC_OK, response.responseCode());
+        assertEquals(Collections.emptyMap(), response.responseHeaders());
+        assertFalse("needs to be non empty", response.responseBody().isEmpty());
+        assertFalse("needs to contain input html element", response.responseBody().contains("<input"));
+    }
 
-            @Override
-            public String requestName() {
-                return requestName;
-            }
+    @Test
+    public void testHandleAgentStatus() {
+        GoPluginApiResponse response = goNotifierPlugin.handle(GoCdObjects.request(Constants.PLUGIN_AGENT_STATUS, null));
+        assertNotNull(response);
+        assertEquals(HttpStatus.SC_NOT_IMPLEMENTED, response.responseCode());
+        assertEquals(Collections.emptyMap(), response.responseHeaders());
+    }
 
-            @Override
-            public Map<String, String> requestParameters() {
-                return null;
-            }
-
-            @Override
-            public Map<String, String> requestHeaders() {
-                return null;
-            }
-
-            @Override
-            public String requestBody() {
-                return requestBody;
-            }
-        };
+    @Test
+    public void testHandleGetConfiguration() {
+        GoPluginApiResponse response = goNotifierPlugin.handle(GoCdObjects.request(Constants.PLUGIN_GET_CONFIGURATION, null));
+        assertNotNull(response);
+        assertEquals(HttpStatus.SC_OK, response.responseCode());
+        assertEquals(Collections.emptyMap(), response.responseHeaders());
+        Map<String, Object> map = gson.fromJson(response.responseBody(), Map.class);
+        assertTrue("contains a config key", map.containsKey(Constants.PARAM_CONDITION));
+        assertTrue("contains a config key", map.containsKey(Constants.PARAM_TEMPLATE));
+        assertTrue("contains a config key", map.containsKey(Constants.PARAM_PROXY_URL));
+        assertTrue("contains a config key", map.containsKey(Constants.PARAM_WEBHOOK_URL));
     }
 
 }

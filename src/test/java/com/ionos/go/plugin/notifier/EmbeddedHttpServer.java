@@ -13,9 +13,11 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Credential;
 
+import javax.servlet.Servlet;
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
@@ -38,7 +40,7 @@ public class EmbeddedHttpServer {
 
     private HandlerList resourceHandler;
 
-    private SecurityHandler securityHandler;
+    private ServletHandler servletHandler;
 
     /** Creates a new instance.
      * */
@@ -49,6 +51,8 @@ public class EmbeddedHttpServer {
         final ServerConnector serverConnector = new ServerConnector(server);
         serverConnector.setPort(0);
         server.addConnector(serverConnector);
+        this.servletHandler = new ServletHandler();
+        server.setHandler(servletHandler);
 
         serverRunnable = () -> {
             try {
@@ -64,62 +68,8 @@ public class EmbeddedHttpServer {
         };
     }
 
-    /**
-     * Configures basic authentication.
-     * @param userPassword user password pairs that can authenticate.
-     * @return this instance.
-     */
-    public EmbeddedHttpServer withBasicAuth(@NonNull final Map<String,String> userPassword) {
-        HashLoginService loginService = new HashLoginService();
-        UserStore myUserStore = new UserStore();
-        userPassword.forEach((key, value) -> myUserStore.addUser(key, Credential.getCredential(value), new String[]{"user"}));
-        loginService.setUserStore(myUserStore);
-
-        server.addBean(loginService);
-
-        ConstraintSecurityHandler security = new ConstraintSecurityHandler();
-
-        securityHandler = security;
-        server.setHandler(security);
-
-        Constraint constraint = new Constraint();
-        constraint.setName("auth");
-        constraint.setAuthenticate(true);
-        constraint.setRoles(new String[]{"user"});
-
-        ConstraintMapping mapping = new ConstraintMapping();
-        mapping.setPathSpec("/*");
-        mapping.setConstraint(constraint);
-
-        security.setConstraintMappings(Collections.singletonList(mapping));
-        security.setAuthenticator(new BasicAuthenticator());
-        security.setLoginService(loginService);
-
-        if (resourceHandler != null) {
-            security.setHandler(resourceHandler);
-        }
-        return this;
-    }
-
-    /**
-     * Configures a resource path to fetch files from.
-     * @param resourcePath the filesystem path to serve resources from.
-     * @return this instance.
-     */
-    public EmbeddedHttpServer withPath(@NonNull final File resourcePath) {
-        final ResourceHandler myResourceHandler = new ResourceHandler();
-
-        myResourceHandler.setDirectoriesListed(true);
-        myResourceHandler.setResourceBase(resourcePath.getAbsolutePath());
-
-        final HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{myResourceHandler, new DefaultHandler()});
-        if (securityHandler != null) {
-            securityHandler.setHandler(handlers);
-        } else {
-            server.setHandler(handlers);
-        }
-        this.resourceHandler = handlers;
+    public EmbeddedHttpServer withServlet(@NonNull final Class<? extends Servlet> servletClass, String mapping) {
+        servletHandler.addServletWithMapping(servletClass, mapping);
         return this;
     }
 
