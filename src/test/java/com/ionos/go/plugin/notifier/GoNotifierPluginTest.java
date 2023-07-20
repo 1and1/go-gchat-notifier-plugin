@@ -120,6 +120,24 @@ public class GoNotifierPluginTest {
         assertEquals(HttpStatus.SC_OK, response.responseCode());
         assertEquals(Collections.emptyMap(), response.responseHeaders());
         ValidateConfigurationResponse[] validateConfigurationResponses = gson.fromJson(response.responseBody(), ValidateConfigurationResponse[].class);
-        assertEquals(goNotifierPlugin.getConfigurationProperties().getPropertyMap().size(), validateConfigurationResponses.length);
+        // minus proxy url
+        assertEquals(goNotifierPlugin.getConfigurationProperties().getPropertyMap().size() - 1, validateConfigurationResponses.length);
+    }
+
+    @Test
+    public void testHandleValidateConfigurationWithGoodRequestNoErrors() {
+        ValidateConfigurationRequest request = new ValidateConfigurationRequest();
+        Map<String, Map<String, String>> pluginSettings = new HashMap<>();
+        pluginSettings.put(Constants.PARAM_TEMPLATE, Collections.singletonMap(Constants.FIELD_VALUE, "${stageStatus.pipeline.name}"));
+        pluginSettings.put(Constants.PARAM_CONDITION, Collections.singletonMap(Constants.FIELD_VALUE,"${(stageStatus.pipeline.stage.state == 'Failed')?string('true', 'false')}"));
+        pluginSettings.put(Constants.PARAM_WEBHOOK_URL, Collections.singletonMap(Constants.FIELD_VALUE,"https://localhost/"));
+        pluginSettings.put(Constants.PARAM_PROXY_URL, Collections.singletonMap(Constants.FIELD_VALUE, ""));
+        request.setPluginSettings(pluginSettings);
+        GoPluginApiResponse response = goNotifierPlugin.handle(GoCdObjects.request(Constants.PLUGIN_VALIDATE_CONFIGURATION, gson.toJson(request)));
+        assertNotNull(response);
+        assertEquals(HttpStatus.SC_OK, response.responseCode());
+        assertEquals(Collections.emptyMap(), response.responseHeaders());
+        ValidateConfigurationResponse[] validateConfigurationResponses = gson.fromJson(response.responseBody(), ValidateConfigurationResponse[].class);
+        assertEquals(0, validateConfigurationResponses.length);
     }
 }

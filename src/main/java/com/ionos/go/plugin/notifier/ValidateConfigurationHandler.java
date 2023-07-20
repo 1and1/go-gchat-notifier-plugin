@@ -83,9 +83,7 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
             if (validateNonNull(validateRequest, response, Constants.PARAM_TEMPLATE)) {
                 validateTemplate(validateRequest, response);
             }
-            if (validateNonNull(validateRequest, response, Constants.PARAM_PROXY_URL)) {
-                validateProxyUrl(validateRequest, response);
-            }
+            validateProxyUrl(validateRequest, response);
         } else {
             return DefaultGoPluginApiResponse.error("Illegal request");
         }
@@ -117,8 +115,14 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
 
 
     private static void validateProxyUrl(ValidateConfigurationRequest validateRequest, List<ValidateConfigurationResponse> response) {
+        if (validateRequest == null
+                || validateRequest.getPluginSettings() == null
+                || validateRequest.getPluginSettings().get(Constants.PARAM_PROXY_URL) == null
+                || validateRequest.getPluginSettings().get(Constants.PARAM_PROXY_URL).get(Constants.FIELD_VALUE) == null) {
+            return;
+        }
         String proxyUrl = validateRequest.getPluginSettings().get(Constants.PARAM_PROXY_URL).get(Constants.FIELD_VALUE);
-        if (proxyUrl != null && !proxyUrl.isEmpty()) {
+        if (!proxyUrl.isEmpty()) {
             try {
                 new URL(proxyUrl);
             } catch (MalformedURLException e) {
