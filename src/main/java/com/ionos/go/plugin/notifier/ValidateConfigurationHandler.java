@@ -1,20 +1,22 @@
 package com.ionos.go.plugin.notifier;
 
+import com.google.gson.Gson;
 import com.ionos.go.plugin.notifier.message.GoPluginApiRequestHandler;
 import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
 import com.ionos.go.plugin.notifier.message.incoming.ValidateConfigurationRequest;
 import com.ionos.go.plugin.notifier.message.outgoing.ValidateConfigurationResponse;
 import com.ionos.go.plugin.notifier.template.TemplateHandler;
+import com.ionos.go.plugin.notifier.util.Helper;
+import com.ionos.go.plugin.notifier.util.JsonUtil;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import lombok.NonNull;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,38 +33,21 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
         this.serverInfo = serverInfo;
     }
 
-    /** Creates a sample object for testing the condition and the template with.
+    /** Creates sample objects for testing the condition and the template with.
      * */
-    private StageStatusRequest newSampleStageStatusRequest() {
-        StageStatusRequest response = new StageStatusRequest();
-        StageStatusRequest.Pipeline pipeline = new StageStatusRequest.Pipeline();
-        StageStatusRequest.Stage stage = new StageStatusRequest.Stage();
-        StageStatusRequest.Job job = new StageStatusRequest.Job();
+    private List<StageStatusRequest> newSampleStageStatusRequests() throws IOException {
+        List<StageStatusRequest> response = new ArrayList<>();
 
-        job.setName("jobname");
-        job.setAssignTime(ZonedDateTime.now());
-        job.setCompleteTime(ZonedDateTime.now());
-        job.setScheduleTime(ZonedDateTime.now());
-        job.setState("failed");
-        job.setResult("cancelled");
+        Gson gson = new Gson();
+        StageStatusRequest success = JsonUtil.fromJsonString(
+                Helper.readResource("/sampleSuccess.json"),
+                StageStatusRequest.class);
+        response.add(success);
 
-        stage.setName("stagename");
-        stage.setApprovedBy("John Doe");
-        stage.setCounter("1");
-        stage.setPreviousStageCounter(0);
-        stage.setApprovalType("foo");
-        stage.setState("failed");
-        stage.setResult("cancelled");
-        stage.setCreateTime(ZonedDateTime.now());
-        stage.setJobs(new StageStatusRequest.Job[] {job});
-
-        pipeline.setStage(stage);
-        pipeline.setName("pipelinename");
-        pipeline.setCounter("0");
-        pipeline.setGroup("pipelinegroup");
-        pipeline.setBuildCause(new ArrayList<>());
-
-        response.setPipeline(pipeline);
+        StageStatusRequest failed = JsonUtil.fromJsonString(
+                Helper.readResource("/sampleFailed.json"),
+                StageStatusRequest.class);
+        response.add(failed);
 
         return response;
     }
@@ -138,7 +123,9 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
         } else {
             try {
                 TemplateHandler handler = new TemplateHandler("template", template);
-                handler.eval(newSampleStageStatusRequest(), serverInfo);
+                for (StageStatusRequest sample : newSampleStageStatusRequests()) {
+                    handler.eval(sample, serverInfo);
+                }
             }
             catch (Exception e) {
                 LOGGER.warn("Exception in " + Constants.PARAM_TEMPLATE, e);
@@ -154,9 +141,11 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
         } else {
             try {
                 TemplateHandler handler = new TemplateHandler(Constants.PARAM_CONDITION, condition);
-                String shouldBeBool = handler.eval(newSampleStageStatusRequest(), serverInfo);
-                if (!(shouldBeBool.equals("true") || shouldBeBool.equals("false"))) {
-                    response.add(new ValidateConfigurationResponse(Constants.PARAM_CONDITION, "Condition should eval to true or false, but evals to: " + shouldBeBool));
+                for (StageStatusRequest sample : newSampleStageStatusRequests()) {
+                    String shouldBeBool = handler.eval(sample, serverInfo);
+                    if (!(shouldBeBool.equals("true") || shouldBeBool.equals("false"))) {
+                        response.add(new ValidateConfigurationResponse(Constants.PARAM_CONDITION, "Condition should eval to true or false, but evals to: " + shouldBeBool));
+                    }
                 }
             }
             catch (Exception e) {
