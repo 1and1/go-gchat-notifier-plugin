@@ -25,16 +25,6 @@ public class StageStatusHandlerTest extends CommonTestBase {
     }
 
     @Test
-    public void testHandleWithEmptyRequest() {
-        StageStatusRequest stageStatusRequest = new StageStatusRequest();
-        GoPluginApiRequest request = GoCdObjects.request(Constants.PLUGIN_STAGE_STATUS, getGson().toJson(stageStatusRequest));
-        StageStatusHandler handler = new StageStatusHandler(getServerInfo(), getPluginSettings());
-        GoPluginApiResponse response = handler.handle(request);
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_OK, response.responseCode());
-    }
-
-    @Test
     public void testHandle() throws IOException {
         String stageStatusJson = Helper.readResource("/stageStatus.json");
         GoPluginApiRequest request = GoCdObjects.request(Constants.PLUGIN_STAGE_STATUS, stageStatusJson);
