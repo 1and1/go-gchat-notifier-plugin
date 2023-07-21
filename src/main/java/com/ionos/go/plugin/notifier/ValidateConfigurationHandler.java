@@ -140,12 +140,16 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
             response.add(new ValidateConfigurationResponse(Constants.PARAM_CONDITION, Constants.PARAM_CONDITION + " is empty"));
         } else {
             try {
+                String nonTrueOrFalse = null;
                 TemplateHandler handler = new TemplateHandler(Constants.PARAM_CONDITION, condition);
                 for (StageStatusRequest sample : newSampleStageStatusRequests()) {
                     String shouldBeBool = handler.eval(sample, serverInfo);
                     if (!(shouldBeBool.equals("true") || shouldBeBool.equals("false"))) {
-                        response.add(new ValidateConfigurationResponse(Constants.PARAM_CONDITION, "Condition should eval to true or false, but evals to: " + shouldBeBool));
+                        nonTrueOrFalse = shouldBeBool;
                     }
+                }
+                if (nonTrueOrFalse != null) {
+                    response.add(new ValidateConfigurationResponse(Constants.PARAM_CONDITION, "Condition should eval to true or false, but evals to: " + nonTrueOrFalse));
                 }
             }
             catch (Exception e) {

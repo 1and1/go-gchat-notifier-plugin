@@ -122,6 +122,22 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
     }
 
     @Test
+    public void testHandleValidateConfigurationWithConditionNotTrueOrFalse() {
+        Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
+        pluginSettings.put(Constants.PARAM_CONDITION, Collections.singletonMap(Constants.FIELD_VALUE, "tralse"));
+        request.setPluginSettings(pluginSettings);
+        GoPluginApiResponse response = getGoNotifierPlugin().handle(
+                GoCdObjects.request(Constants.PLUGIN_VALIDATE_CONFIGURATION, getGson().toJson(request)));
+        assertNotNull(response);
+        assertEquals(HttpStatus.SC_OK, response.responseCode());
+        assertEquals(Collections.emptyMap(), response.responseHeaders());
+        ValidateConfigurationResponse[] validateConfigurationResponses = getGson().fromJson(response.responseBody(), ValidateConfigurationResponse[].class);
+        assertEquals(1, validateConfigurationResponses.length);
+        assertEquals(Constants.PARAM_CONDITION, validateConfigurationResponses[0].getKey());
+        assertTrue("Should contain 'true or false'", validateConfigurationResponses[0].getMessage().contains("true or false"));
+    }
+
+    @Test
     public void testHandleValidateConfigurationWithMalformedProxyUrl() {
         Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
         pluginSettings.put(Constants.PARAM_PROXY_URL, Collections.singletonMap(Constants.FIELD_VALUE, "hppt://foo.bar"));
@@ -134,6 +150,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
         ValidateConfigurationResponse[] validateConfigurationResponses = getGson().fromJson(response.responseBody(), ValidateConfigurationResponse[].class);
         assertEquals(1, validateConfigurationResponses.length);
         assertEquals(Constants.PARAM_PROXY_URL, validateConfigurationResponses[0].getKey());
+        assertEquals("Malformed url: unknown protocol: hppt", validateConfigurationResponses[0].getMessage());
     }
 
     @Test
@@ -149,5 +166,6 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
         ValidateConfigurationResponse[] validateConfigurationResponses = getGson().fromJson(response.responseBody(), ValidateConfigurationResponse[].class);
         assertEquals(1, validateConfigurationResponses.length);
         assertEquals(Constants.PARAM_WEBHOOK_URL, validateConfigurationResponses[0].getKey());
+        assertEquals("Malformed url: unknown protocol: hppt", validateConfigurationResponses[0].getMessage());
     }
 }
