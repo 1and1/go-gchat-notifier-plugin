@@ -33,7 +33,7 @@ public class GoogleChatWebhookSender {
     private CloseableHttpClient newClient() {
         CloseableHttpClient result;
 
-        if (proxyUrl != null) {
+        if (proxyUrl != null && !proxyUrl.isEmpty()) {
             HttpHost proxyHost = HttpHost.create(URI.create(proxyUrl));
             LOGGER.debug("Creating client with proxy " + proxyHost);
             result = HttpClients.custom().setProxy(proxyHost).build();
