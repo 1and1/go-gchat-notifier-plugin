@@ -5,6 +5,7 @@ import com.ionos.go.plugin.notifier.util.Helper;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.hc.core5.http.HttpStatus;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -30,6 +31,19 @@ public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
         embeddedHttpPort = embeddedHttpServer.getRunningPort();
     }
 
+    @Before
+    public void setupConfig() {
+        getPluginSettings().put(Constants.PARAM_WEBHOOK_URL, "http://localhost:" + embeddedHttpPort + "/gchat");
+        getPluginSettings().put(Constants.PARAM_CONDITION, "true");
+        getPluginSettings().put(Constants.PARAM_TEMPLATE, "${stageStatus.pipeline.group}");
+    }
+
+    @Before
+    public void initServlet() {
+        GoogleMockServlet.reset();
+        GoogleMockServlet.setStatusToReturn(HttpStatus.SC_OK);
+    }
+
     @AfterClass
     public static void stopLocalWebServer() {
         embeddedHttpServer.stop();
@@ -37,12 +51,8 @@ public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
 
     @Test
     public void testHandleStageStatusNoSendingConditionFalse() throws IOException {
-        GoogleMockServlet.reset();
-        GoogleMockServlet.setStatusToReturn(HttpStatus.SC_OK);
         String stageStatusJson = Helper.readResource("/stageStatus.json");
-        getPluginSettings().put(Constants.PARAM_WEBHOOK_URL, "http://localhost:" + embeddedHttpPort + "/gchat");
         getPluginSettings().put(Constants.PARAM_CONDITION, "false");
-        getPluginSettings().put(Constants.PARAM_TEMPLATE, "${stageStatus.pipeline.group}");
 
         GoPluginApiResponse response = getGoNotifierPlugin().handle(
                 GoCdObjects.request(Constants.PLUGIN_STAGE_STATUS, stageStatusJson));
@@ -59,12 +69,7 @@ public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
 
     @Test
     public void testHandleStageStatusGoodWeather() throws IOException {
-        GoogleMockServlet.reset();
-        GoogleMockServlet.setStatusToReturn(HttpStatus.SC_OK);
         String stageStatusJson = Helper.readResource("/stageStatus.json");
-        getPluginSettings().put(Constants.PARAM_WEBHOOK_URL, "http://localhost:" + embeddedHttpPort + "/gchat");
-        getPluginSettings().put(Constants.PARAM_CONDITION, "true");
-        getPluginSettings().put(Constants.PARAM_TEMPLATE, "${stageStatus.pipeline.group}");
 
         GoPluginApiResponse response = getGoNotifierPlugin().handle(
                 GoCdObjects.request(Constants.PLUGIN_STAGE_STATUS, stageStatusJson));
@@ -82,13 +87,9 @@ public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
     }
 
     @Test
-    public void testHandleStageStatusBadWeather() throws IOException {
-        GoogleMockServlet.reset();
+    public void testHandleStageStatusWithRemoteBadRequest() throws IOException {
         GoogleMockServlet.setStatusToReturn(HttpStatus.SC_BAD_REQUEST);
         String stageStatusJson = Helper.readResource("/stageStatus.json");
-        getPluginSettings().put(Constants.PARAM_WEBHOOK_URL, "http://localhost:" + embeddedHttpPort + "/gchat");
-        getPluginSettings().put(Constants.PARAM_CONDITION, "true");
-        getPluginSettings().put(Constants.PARAM_TEMPLATE, "${stageStatus.pipeline.group}");
 
         GoPluginApiResponse response = getGoNotifierPlugin().handle(GoCdObjects.request(Constants.PLUGIN_STAGE_STATUS, stageStatusJson));
         assertNotNull(response);
