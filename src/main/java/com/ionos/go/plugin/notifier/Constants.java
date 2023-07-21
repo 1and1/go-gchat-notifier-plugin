@@ -1,6 +1,10 @@
 package com.ionos.go.plugin.notifier;
 
 public class Constants {
+    private Constants() {
+        // no instance
+    }
+
     static final String PARAM_TEMPLATE = "template";
 
     /** Plugin parameter condition is a freemarker template evaluating towards {@code true} or {@code false}. */
