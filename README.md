@@ -88,7 +88,7 @@ The following configuration items exist in the plugin:
 * Condition for sending (freemarker):* A freemarker format template
   that either needs to render to the String `true` or
   `false` to decide whether to send a message (`true`)
-  or not (`false`).
+  or not (`false`). Gets the same objects as the template above.
 * GChat webhook URL:* The mandatory GChat
   space webhook URL to send messages to. Please see
   'Getting a GChat webhook URL' on how to get a webhook.
