@@ -11,14 +11,16 @@ A GoCD notification plugin for the
 
 A chat message can look like this:
 
+---
 ![GChat screenshot](img/gchat.png)
+---
 
 The plugin is very customizable by using the
 template language
 [Apache Freemarker](https://freemarker.apache.org/index.html)
 as an approach to formulate
 
-* the condition when to send messages.
+* the condition when to send messages, and
 * the chat message body themselves.
 
 ### Requirements
