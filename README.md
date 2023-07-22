@@ -13,6 +13,7 @@ A chat message can look like this:
 
 ---
 ![GChat screenshot](img/gchat.png)
+
 ---
 
 The plugin is very customizable by using the
