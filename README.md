@@ -72,7 +72,7 @@ The following configuration items exist in the plugin:
   [freemarker format](https://freemarker.apache.org/docs/dgui_template_overallstructure.html) template
   for the chat message body. The template has access
   to the following objects that are registered
-  in the templates context:
+  in the template's context:
   * `stageStatus`: The original stage status request from the
     GoCD server. Can be used to render some information
     about the pipeline.
@@ -80,7 +80,7 @@ The following configuration items exist in the plugin:
     or [this image](img/stageStatus.png) for a sample
     on the document structure.
   * `serverInfo`: The server info object that contains the
-    servers address(es). Can be used to render some
+    server's address(es). Can be used to render some
     URLs towards the console.
     See [this json](doc/serverInfo.json)
     or [this image](img/serverInfo.png) for a sample
