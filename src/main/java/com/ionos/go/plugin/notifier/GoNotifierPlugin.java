@@ -132,7 +132,6 @@ public class GoNotifierPlugin implements GoPlugin {
     private static final String GET_VIEW_TEMPLATE = "/get-view.html";
 
     private GoPluginApiResponse handleGetConfiguration(GoPluginApiRequest request) {
-        LOGGER.error(toJsonString(configurationProperties.getPropertyMap()));
         return success(toJsonString(configurationProperties.getPropertyMap()));
     }
 
