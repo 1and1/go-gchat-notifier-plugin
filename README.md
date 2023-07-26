@@ -11,14 +11,17 @@ A GoCD notification plugin for the
 
 A chat message can look like this:
 
+---
 ![GChat screenshot](img/gchat.png)
+
+---
 
 The plugin is very customizable by using the
 template language
 [Apache Freemarker](https://freemarker.apache.org/index.html)
 as an approach to formulate
 
-* the condition when to send messages.
+* the condition when to send messages, and
 * the chat message body themselves.
 
 ### Requirements
@@ -69,7 +72,7 @@ The following configuration items exist in the plugin:
   [freemarker format](https://freemarker.apache.org/docs/dgui_template_overallstructure.html) template
   for the chat message body. The template has access
   to the following objects that are registered
-  in the templates context:
+  in the template's context:
   * `stageStatus`: The original stage status request from the
     GoCD server. Can be used to render some information
     about the pipeline.
@@ -77,7 +80,7 @@ The following configuration items exist in the plugin:
     or [this image](img/stageStatus.png) for a sample
     on the document structure.
   * `serverInfo`: The server info object that contains the
-    servers address(es). Can be used to render some
+    server's address(es). Can be used to render some
     URLs towards the console.
     See [this json](doc/serverInfo.json)
     or [this image](img/serverInfo.png) for a sample
@@ -85,7 +88,7 @@ The following configuration items exist in the plugin:
 * Condition for sending (freemarker):* A freemarker format template
   that either needs to render to the String `true` or
   `false` to decide whether to send a message (`true`)
-  or not (`false`).
+  or not (`false`). Gets the same objects as the template above.
 * GChat webhook URL:* The mandatory GChat
   space webhook URL to send messages to. Please see
   'Getting a GChat webhook URL' on how to get a webhook.
