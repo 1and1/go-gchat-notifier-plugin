@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ionos.go.plugin.notifier.message.*;
 import com.ionos.go.plugin.notifier.message.incoming.AgentStatusRequest;
+import com.ionos.go.plugin.notifier.message.outgoing.GetConfigurationProperty;
+import com.ionos.go.plugin.notifier.message.outgoing.GetConfigurationResponse;
 import com.ionos.go.plugin.notifier.message.outgoing.NotificationsInterestedInResponse;
 import com.ionos.go.plugin.notifier.util.Helper;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
@@ -21,12 +23,9 @@ import lombok.Getter;
 import org.apache.hc.core5.http.HttpStatus;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.ionos.go.plugin.notifier.util.JsonUtil.fromJsonString;
 import static com.ionos.go.plugin.notifier.util.JsonUtil.toJsonString;
@@ -56,7 +55,7 @@ public class GoNotifierPlugin implements GoPlugin {
     private GoApplicationAccessor goApplicationAccessor;
 
     @Getter(AccessLevel.MODULE)
-    private final ConfigurationProperties configurationProperties;
+    private final GetConfigurationResponse configurationProperties;
 
     /** Plugin parameter template is a freemarker template. */
 
@@ -71,27 +70,27 @@ public class GoNotifierPlugin implements GoPlugin {
         LOGGER.debug("C'tor start");
         LOGGER.info("GoNotifierPlugin is here");
 
-        configurationProperties = new ConfigurationProperties();
-        configurationProperties.addConfigurationProperty(Constants.PARAM_TEMPLATE, ConfigurationProperty.builder()
+        configurationProperties = new GetConfigurationResponse();
+        configurationProperties.put(Constants.PARAM_TEMPLATE, GetConfigurationProperty.builder()
                 .displayName("EL message template")
                 .defaultValue(DEFAULT_TEMPLATE)
                 .required(true)
                 .displayOrder("0")
                 .build());
-        configurationProperties.addConfigurationProperty(Constants.PARAM_CONDITION, ConfigurationProperty.builder()
+        configurationProperties.put(Constants.PARAM_CONDITION, GetConfigurationProperty.builder()
                 .displayName("EL condition template")
                 .defaultValue(DEFAULT_CONDITION)
                 .required(true)
                 .displayOrder("1")
                 .build());
-        configurationProperties.addConfigurationProperty(Constants.PARAM_WEBHOOK_URL, ConfigurationProperty.builder()
+        configurationProperties.put(Constants.PARAM_WEBHOOK_URL, GetConfigurationProperty.builder()
                 .displayName("Google Chat Webhook URL")
                 .defaultValue(DEFAULT_URL)
                 .required(true)
                 .displayOrder("2")
                 .build());
-        configurationProperties.addConfigurationProperty(Constants.PARAM_PROXY_URL, ConfigurationProperty.builder()
-                .displayName("Optional HTTP proxy URL, i.e. http://my.proxy:3128/")
+        configurationProperties.put(Constants.PARAM_PROXY_URL, GetConfigurationProperty.builder()
+                .displayName("Proxy URL")
                 .required(false)
                 .displayOrder("3")
                 .build());
@@ -132,7 +131,7 @@ public class GoNotifierPlugin implements GoPlugin {
     private static final String GET_VIEW_TEMPLATE = "/get-view.html";
 
     private GoPluginApiResponse handleGetConfiguration(GoPluginApiRequest request) {
-        return success(toJsonString(configurationProperties.getPropertyMap()));
+        return success(toJsonString(configurationProperties));
     }
 
     private GoPluginApiResponse handleAgentStatus(GoPluginApiRequest request) {

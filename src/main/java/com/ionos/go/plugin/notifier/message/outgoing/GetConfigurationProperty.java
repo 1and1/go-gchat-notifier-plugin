@@ -1,13 +1,15 @@
-package com.ionos.go.plugin.notifier.message;
+package com.ionos.go.plugin.notifier.message.outgoing;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
 import lombok.Getter;
 
-/** Representation of a configuration property definition. */
+/** Representation of a configuration property definition.
+ * @see GetConfigurationResponse
+ * */
 @Builder
-public class ConfigurationProperty {
+public class GetConfigurationProperty {
 
     /**
      * The default value for {@code this} property.
@@ -16,22 +18,10 @@ public class ConfigurationProperty {
     @Getter private String defaultValue;
 
     /**
-     * The value for {@code this} property.
-     */
-    @Expose
-    @Getter private String value;
-
-    /**
      * Flag indicating whether the content of {@code this} property value should be displayed hidden.
      */
     @Expose
     @Getter private Boolean secure;
-
-    /**
-     * Flag indicating whether {@code this} property is part of the configuration identifier.
-     */
-    @Expose @SerializedName("part-of-identity")
-    @Getter private Boolean partOfIdentity;
 
     /**
      * FLag indicating whether a value for {@code this} property is required

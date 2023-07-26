@@ -45,7 +45,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
         assertEquals(Collections.emptyMap(), response.responseHeaders());
         ValidateConfigurationResponse[] validateConfigurationResponses = getGson().fromJson(response.responseBody(), ValidateConfigurationResponse[].class);
         // minus proxy url
-        assertEquals(getGoNotifierPlugin().getConfigurationProperties().getPropertyMap().size() - 1, validateConfigurationResponses.length);
+        assertEquals(getGoNotifierPlugin().getConfigurationProperties().size() - 1, validateConfigurationResponses.length);
     }
 
     @Test
