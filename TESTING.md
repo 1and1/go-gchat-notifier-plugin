@@ -6,7 +6,7 @@ Compile & make the plugin available via HTTP port 8011 on your local machine:
 
 ```bash
 ~ mvn -DskipTests clean package && \
-podman run -p8011:80 -v/home/stephan/git/github/go-gchat-notifier-plugin/target/go-gchat-notifier-plugin.jar:/usr/share/nginx/html/go-gchat-notifier-plugin.jar nginx:1.19.9
+podman run -p8011:80 -v$PWD/target/go-gchat-notifier-plugin.jar:/usr/share/nginx/html/go-gchat-notifier-plugin.jar nginx:1.19.9
 ```
 
 Start up GoCD with TCP 8153 and let it download the plugin from the nginx above:
