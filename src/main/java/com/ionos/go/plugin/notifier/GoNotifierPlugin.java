@@ -170,7 +170,7 @@ public class GoNotifierPlugin implements GoPlugin {
         GoApiResponse response = this.goApplicationAccessor.submit(request);
 
         // check status
-        if (response.responseCode() != 200) {
+        if (response.responseCode() != HttpStatus.SC_OK) {
             LOGGER.error("The server sent an unexpected status code " + response.responseCode() + " with the response body " + response.responseBody());
         }
 
@@ -195,7 +195,7 @@ public class GoNotifierPlugin implements GoPlugin {
         GoApiResponse response = this.goApplicationAccessor.submit(request);
 
         // check status
-        if (response.responseCode() != 200) {
+        if (response.responseCode() != HttpStatus.SC_OK) {
             LOGGER.error("The server sent an unexpected status code " + response.responseCode() + " with the response body " + response.responseBody());
         }
 
