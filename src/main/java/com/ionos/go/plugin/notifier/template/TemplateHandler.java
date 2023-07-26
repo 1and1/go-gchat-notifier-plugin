@@ -16,13 +16,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+/** A wrapper around Freemarker to instantiate a template for
+ * either text expansion or condition evaluation.
+ * */
 public class TemplateHandler {
 
     private static final Logger LOGGER = Logger.getLoggerFor(TemplateHandler.class);
 
+    /** The template text to expand. */
     private final String templateString;
+
+    /** The template instance object after compiling templateString. */
     private final Template template;
 
+    /** Creates a new instance.
+     * @param templateName the name of the template for re-using already compared Freemarker templates.
+     *                     Needs to be the same for the same template text.
+     * @param template the freemarker syntax template to expand.
+     * */
     public TemplateHandler(
             @NonNull String templateName,
             @NonNull String template) throws IOException {
@@ -40,14 +51,13 @@ public class TemplateHandler {
                 cfg);
     }
 
-    public String eval(@NonNull StageStatusRequest stageStatusRequest, Map<String,String> serverInfo) throws TemplateException, IOException {
+    /** Expands the template with the given parameters.
+     * */
+    public String eval(@NonNull TemplateContext context) throws TemplateException, IOException {
 
         Writer out = new StringWriter();
-        Map<Object, Object> model = new HashMap<>();
-        model.put("stageStatus", stageStatusRequest);
-        model.put("serverInfo", serverInfo);
 
-        template.process(model, out);
+        template.process(context, out);
 
         final String value = out.toString();
         LOGGER.debug("Value is: " + value);

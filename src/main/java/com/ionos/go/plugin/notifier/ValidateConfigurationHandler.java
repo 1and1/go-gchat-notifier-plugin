@@ -5,6 +5,7 @@ import com.ionos.go.plugin.notifier.message.GoPluginApiRequestHandler;
 import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
 import com.ionos.go.plugin.notifier.message.incoming.ValidateConfigurationRequest;
 import com.ionos.go.plugin.notifier.message.outgoing.ValidateConfigurationResponse;
+import com.ionos.go.plugin.notifier.template.TemplateContext;
 import com.ionos.go.plugin.notifier.template.TemplateHandler;
 import com.ionos.go.plugin.notifier.util.Helper;
 import com.ionos.go.plugin.notifier.util.JsonUtil;
@@ -24,6 +25,9 @@ import static com.ionos.go.plugin.notifier.util.JsonUtil.fromJsonString;
 import static com.ionos.go.plugin.notifier.util.JsonUtil.toJsonString;
 import static com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse.success;
 
+/** Handles the validation of plugin settings.
+ * @see Constants#PLUGIN_VALIDATE_CONFIGURATION
+ * */
 class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
     private static final Logger LOGGER = Logger.getLoggerFor(GoNotifierPlugin.class);
 
@@ -124,7 +128,7 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
             try {
                 TemplateHandler handler = new TemplateHandler("template", template);
                 for (StageStatusRequest sample : newSampleStageStatusRequests()) {
-                    handler.eval(sample, serverInfo);
+                    handler.eval(new TemplateContext(sample, serverInfo));
                 }
             }
             catch (Exception e) {
@@ -143,7 +147,7 @@ class ValidateConfigurationHandler implements GoPluginApiRequestHandler {
                 String nonTrueOrFalse = null;
                 TemplateHandler handler = new TemplateHandler(Constants.PARAM_CONDITION, condition);
                 for (StageStatusRequest sample : newSampleStageStatusRequests()) {
-                    String shouldBeBool = handler.eval(sample, serverInfo);
+                    String shouldBeBool = handler.eval(new TemplateContext(sample, serverInfo));
                     if (!(shouldBeBool.equals("true") || shouldBeBool.equals("false"))) {
                         nonTrueOrFalse = shouldBeBool;
                     }

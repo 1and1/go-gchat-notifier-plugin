@@ -1,5 +1,6 @@
 package com.ionos.go.plugin.notifier;
 
+/** Constants that are re-used within the plugin. */
 public class Constants {
     private Constants() {
         // no instance
@@ -28,5 +29,4 @@ public class Constants {
     static final String PLUGIN_GET_VIEW = "go.plugin-settings.get-view";
     static final String SERVER_PLUGIN_SETTINGS_GET = "go.processor.plugin-settings.get";
     static final String SERVER_SERVER_INFO_GET = "go.processor.server-info.get";
-
 }
