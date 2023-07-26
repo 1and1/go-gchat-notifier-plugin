@@ -1,19 +1,23 @@
-<div class="form_item_block">
+<div class="form_item_block"
+     title="Available objects in FreeMarker: stageStatus, serverInfo">
     <label for="ionosgchat_template">GChat template (<a href="https://freemarker.apache.org/docs/dgui_template_overallstructure.html" target="_blank">freemarker</a>):<span class='asterix'>*</span></label>
     <textarea id="ionosgchat_template" ng-model="template" ng-required="true" cols="40" rows="5"></textarea>
     <span class="form_error" ng-show="GOINPUTNAME[template].$error.server">{{GOINPUTNAME[template].$error.server}}</span>
 </div>
-<div class="form_item_block">
+<div class="form_item_block"
+     title="Available objects in FreeMarker: stageStatus, serverInfo, needs to evaluate to 'true' or 'false'">
     <label for="ionosgchat_condition">Condition for sending (<a href="https://freemarker.apache.org/docs/dgui_template_overallstructure.html" target="_blank">freemarker</a>):<span class='asterix'>*</span></label>
     <textarea id="ionosgchat_condition" ng-model="condition" ng-required="true" cols="40" rows="5"></textarea>
     <span class="form_error" ng-show="GOINPUTNAME[condition].$error.server">{{GOINPUTNAME[condition].$error.server}}</span>
 </div>
-<div class="form_item_block">
+<div class="form_item_block"
+    title="Sample URL: 'https://chat.googleapis.com/v1/spaces/.../messages?key=...&token=...'">
     <label for="ionosgchat_webhook_url">GChat webhook <a href="https://developers.google.com/chat/how-tos/webhooks?hl=de" target="_blank">URL</a>:<span class='asterix'>*</span></label>
     <input id="ionosgchat_webhook_url" type="text" ng-model="webhook_url" ng-required="true"></input>
     <span class="form_error" ng-show="GOINPUTNAME[webhook_url].$error.server">{{GOINPUTNAME[webhook_url].$error.server}}</span>
 </div>
-<div class="form_item_block">
+<div class="form_item_block"
+    title="Sample URL: 'http://sample.proxy:3128'">
     <label for="ionosgchat_proxy_url">Optional proxy URL:</label>
     <input id="ionosgchat_proxy_url" type="text" ng-model="proxy_url" ng-required="true"></input>
     <span class="form_error" ng-show="GOINPUTNAME[proxy_url].$error.server">{{GOINPUTNAME[proxy_url].$error.server}}</span>
