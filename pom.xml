@@ -4,7 +4,7 @@
 
   <groupId>com.oneandone</groupId>
   <artifactId>go-gchat-notifier</artifactId>
-  <version>0.5.2</version>
+  <version>0.5.3-SNAPSHOT</version>
 
   <name>GoCD GChat Notifier Plugin</name>
   <description>GoCD plugin to send notifications to GChat when pipeline states change</description>
@@ -32,7 +32,7 @@
     <url>https://github.com/1and1/go-gchat-notifier-plugin.git</url>
     <connection>scm:git:git@github.com:1and1/go-gchat-notifier-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:1and1/go-gchat-notifier-plugin.git</developerConnection>
-    <tag>go-gchat-notifier-0.5.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
