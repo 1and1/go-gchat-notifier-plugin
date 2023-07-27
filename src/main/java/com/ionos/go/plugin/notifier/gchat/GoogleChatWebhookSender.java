@@ -9,11 +9,13 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Optional;
 
 public class GoogleChatWebhookSender {
     private static final Logger LOGGER = Logger.getLoggerFor(GoogleChatWebhookSender.class);
@@ -55,26 +57,28 @@ public class GoogleChatWebhookSender {
                     .setHeader("Content-Type", "application/json; charset=UTF-8")
                     .build();
 
-            CloseableHttpResponse response = httpclient.execute(httpPost);
-            if (response.getCode() == 200) {
-                LOGGER.debug("Response with HTTP code " + response.getCode() + " and HTTP reason " + response.getReasonPhrase());
-            } else {
-                LOGGER.warn("Response with HTTP code " + response.getCode() + " and HTTP reason " + response.getReasonPhrase());
-            }
+            httpclient.execute(httpPost, classicHttpResponse -> {
+                if (classicHttpResponse.getCode() == HttpStatus.SC_OK) {
+                    LOGGER.debug("Response with HTTP code " + classicHttpResponse.getCode() + " and HTTP reason " + classicHttpResponse.getReasonPhrase());
+                } else {
+                    LOGGER.warn("Response with HTTP code " + classicHttpResponse.getCode() + " and HTTP reason " + classicHttpResponse.getReasonPhrase());
+                }
 
-            final HttpEntity responseEntity = response.getEntity();
+                final HttpEntity responseEntity = classicHttpResponse.getEntity();
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            responseEntity.writeTo(byteArrayOutputStream);
-            String document = byteArrayOutputStream.toString("UTF-8");
-            LOGGER.debug("Response document " + document);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                responseEntity.writeTo(byteArrayOutputStream);
+                String document = byteArrayOutputStream.toString("UTF-8");
+                LOGGER.debug("Response document " + document);
 
-            if (response.getCode() != 200) {
-                throw new IOException("Google chat url returned http status " +
-                        response.getCode() +
-                        " " +
-                        response.getReasonPhrase());
-            }
+                if (classicHttpResponse.getCode() != HttpStatus.SC_OK) {
+                    throw new IOException("Google chat url returned http status " +
+                            classicHttpResponse.getCode() +
+                            " " +
+                            classicHttpResponse.getReasonPhrase());
+                }
+                return null;
+            });
         }
     }
 }
