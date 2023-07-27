@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 /** Request for the {@code stage-status} request.
  * @see <a href="https://plugin-api.gocd.org/current/notifications/#request-response-basics">here</a>
@@ -40,17 +41,99 @@ public class StageStatusRequest {
         @Setter
         private String group;
 
-        // TODO
         @Expose
         @Getter
         @Setter
         @SerializedName("build-cause")
-        private List<Object> buildCause;
+        private List<BuildCause> buildCause;
 
         @Expose
         @Getter
         @Setter
         private Stage stage;
+    }
+
+    /** The build cause of a {@link Stage}. */
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class BuildCause {
+        @Expose
+        @Getter
+        @Setter
+        private Boolean changed;
+
+        @Expose
+        @Getter
+        @Setter
+        private Material material;
+
+        @Expose
+        @Getter
+        @Setter
+        List<Modification> modifications;
+    }
+
+    /** The material of a {@link BuildCause}. */
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Material {
+        @Expose
+        @Getter
+        @Setter
+        private String fingerprint;
+
+        @Expose
+        @Getter
+        @Setter
+        @SerializedName("git-configuration")
+        private GitConfiguration gitConfiguration;
+
+        @Expose
+        @Getter
+        @Setter
+        String type;
+    }
+
+    /** The git config of a {@link Material}. */
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class GitConfiguration {
+        @Expose
+        @Getter
+        @Setter
+        private String branch;
+
+        @Expose
+        @Getter
+        @Setter
+        @SerializedName("shallow-clone")
+        private Boolean shallowClone;
+
+        @Expose
+        @Getter
+        @Setter
+        String url;
+    }
+
+    /** A modification within a {@link BuildCause}. */
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Modification {
+        @Expose
+        @Getter
+        @Setter
+        private Map<Object, Object> data;
+
+        @Expose
+        @Getter
+        @Setter
+        @SerializedName("modified-time")
+        private ZonedDateTime modifiedTime;
+
+        @Expose
+        @Getter
+        @Setter
+        String revision;
     }
 
     /** The state summary of a stage within a {@link Pipeline}. */
