@@ -4,7 +4,7 @@
 
   <groupId>com.oneandone</groupId>
   <artifactId>go-gchat-notifier</artifactId>
-  <version>0.5.2-SNAPSHOT</version>
+  <version>0.5.3-SNAPSHOT</version>
 
   <name>GoCD GChat Notifier Plugin</name>
   <description>GoCD plugin to send notifications to GChat when pipeline states change</description>
@@ -99,7 +99,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.11.0</version>
         <configuration>
           <encoding>${project.build.sourceEncoding}</encoding>
           <source>1.8</source>
