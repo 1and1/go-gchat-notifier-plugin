@@ -30,6 +30,7 @@ public class TemplateHandler {
      * @param templateName the name of the template for re-using already compared Freemarker templates.
      *                     Needs to be the same for the same template text.
      * @param template the freemarker syntax template to expand.
+     * @throws IOException when an IO problem occured while processing the template.
      * */
     public TemplateHandler(
             @NonNull String templateName,
@@ -49,6 +50,10 @@ public class TemplateHandler {
     }
 
     /** Expands the template with the given parameters.
+     * @param context the context containing template-usable variables.
+     * @return the expanded String.
+     * @throws TemplateException in case the template evaluation went wrong.
+     * @throws IOException when IO went wrong.
      * */
     public String eval(@NonNull TemplateContext context) throws TemplateException, IOException {
 

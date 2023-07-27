@@ -21,6 +21,7 @@ public class StageStatusRequest {
     @Setter
     private Pipeline pipeline;
 
+    /** Summary of the state of a pipeline with its stage and jobs. */
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Pipeline {
@@ -52,6 +53,7 @@ public class StageStatusRequest {
         private Stage stage;
     }
 
+    /** The state summary of a stage within a {@link Pipeline}. */
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Stage {
@@ -111,6 +113,7 @@ public class StageStatusRequest {
         private Job[] jobs;
     }
 
+    /** The state summary of a job within a {@link Stage}. */
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Job {
