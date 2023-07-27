@@ -17,11 +17,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
+/** Miscellaneous helpers. */
 public class Helper {
     private static final Logger LOGGER = Logger.getLoggerFor(Helper.class);
 
     private static final boolean DEBUG = false;
 
+    /** Dumps a String to a file in the tmp filesystem if
+     * debugging is active.
+     * Will catch and ignore all errors.
+     * @param str the String to dump.
+     *  */
     public static void debugDump(@NonNull String str) {
         if (! DEBUG) {
             return;
@@ -37,6 +43,11 @@ public class Helper {
         }
     }
 
+    /** Dumps an Object to a JSON serialization in the tmp filesystem if
+     * debugging is active.
+     * Will catch and ignore all errors.
+     * @param object the object to dump.
+     *  */
     public static void debugDump(@NonNull Object object) {
         if (! DEBUG) {
             return;
@@ -51,6 +62,11 @@ public class Helper {
         }
     }
 
+    /** Reads a resource from the classpath.
+     * @param resource the resource path in the classpath.
+     * @return the loaded resource, decoded in UTF-8.
+     * @throws IOException if loading the resource fails.
+     * */
     public static String readResource(String resource) throws IOException {
         try (InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(Helper.class.getResourceAsStream(resource)), StandardCharsets.UTF_8)) {
             StringBuilder sb = new StringBuilder();
