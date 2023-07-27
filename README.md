@@ -109,7 +109,9 @@ stage run.
 
 ```text
 *Failed:* ${stageStatus.pipeline.group}/${stageStatus.pipeline.name}/${stageStatus.pipeline.stage.name} is ${stageStatus.pipeline.stage.state}, result ${stageStatus.pipeline.stage.result}
-<${serverInfo.secure_site_url}/go/tab/build/detail/${stageStatus.pipeline.name}/${stageStatus.pipeline.counter}/${stageStatus.pipeline.stage.name}/${stageStatus.pipeline.stage.counter}/${stageStatus.pipeline.stage.jobs[0].name}|console>
+<#list stageStatus.pipeline.stage.jobs as job>
+${job.name}: ${job.result} <${serverInfo.secure_site_url}/go/tab/build/detail/${stageStatus.pipeline.name}/${stageStatus.pipeline.counter}/${stageStatus.pipeline.stage.name}/${stageStatus.pipeline.stage.counter}/${job.name}|console>
+</#list>
 ```
 
 #### Condition for sending (freemarker)
