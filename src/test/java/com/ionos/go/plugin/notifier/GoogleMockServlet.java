@@ -35,13 +35,13 @@ public class GoogleMockServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws IOException {
         Logger.getLoggerFor(GoNotifierPluginStageStatusTest.class).debug("Got a POST request");
         invocations++;
         capturedRequestContentType = req.getHeader("Content-Type");
         BufferedReader reader = req.getReader();
         StringWriter writer = new StringWriter();
-        reader.lines().forEach(line -> writer.append(line));
+        reader.lines().forEach(writer::append);
         capturedRequestBody = writer.toString();
         resp.setStatus(statusToReturn);
     }

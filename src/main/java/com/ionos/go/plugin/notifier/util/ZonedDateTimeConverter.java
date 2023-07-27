@@ -3,8 +3,6 @@ package com.ionos.go.plugin.notifier.util;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;

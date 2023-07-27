@@ -22,7 +22,7 @@ import java.util.Optional;
 public class GoogleChatWebhookSender {
     private static final Logger LOGGER = Logger.getLoggerFor(GoogleChatWebhookSender.class);
 
-    private String proxyUrl;
+    private final String proxyUrl;
 
     /** Creates a new instance.
      * @param proxyUrl optional proxy URL or {@code null}.

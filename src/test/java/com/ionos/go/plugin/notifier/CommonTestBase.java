@@ -2,12 +2,8 @@ package com.ionos.go.plugin.notifier;
 
 import com.google.gson.Gson;
 import com.ionos.go.plugin.notifier.util.Helper;
-import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.logging.Logger;
-import com.thoughtworks.go.plugin.api.request.GoApiRequest;
-import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import lombok.Getter;
-import org.apache.hc.core5.http.HttpStatus;
 import org.junit.Before;
 
 import java.io.IOException;

@@ -2,7 +2,6 @@ package com.ionos.go.plugin.notifier;
 
 import com.ionos.go.plugin.notifier.message.incoming.ValidateConfigurationRequest;
 import com.ionos.go.plugin.notifier.message.outgoing.ValidateConfigurationResponse;
-import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.hc.core5.http.HttpStatus;
 import org.junit.Before;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 

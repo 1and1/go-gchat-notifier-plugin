@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** Request for the google chat request.
+/** Request for the Google chat request.
  * @see <a href="https://developers.google.com/chat/how-tos/webhooks?hl=de">here</a>
  * */
 @AllArgsConstructor

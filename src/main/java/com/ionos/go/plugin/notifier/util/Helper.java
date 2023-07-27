@@ -1,7 +1,6 @@
 package com.ionos.go.plugin.notifier.util;
 
 import com.google.gson.Gson;
-import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import lombok.NonNull;
 

@@ -1,21 +1,10 @@
 package com.ionos.go.plugin.notifier;
 
-import com.google.gson.Gson;
-import com.ionos.go.plugin.notifier.message.incoming.ValidateConfigurationRequest;
-import com.ionos.go.plugin.notifier.message.outgoing.ValidateConfigurationResponse;
-import com.ionos.go.plugin.notifier.util.Helper;
-import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
-import com.thoughtworks.go.plugin.api.logging.Logger;
-import com.thoughtworks.go.plugin.api.request.GoApiRequest;
-import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.hc.core5.http.HttpStatus;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +22,7 @@ public class GoNotifierPluginTest extends GoNotifierPluginBase {
     }
 
     @Test
-    public void testHandleNotificationsInterestedIn() throws Exception {
+    public void testHandleNotificationsInterestedIn() {
         // request get conf
         GoPluginApiResponse response = getGoNotifierPlugin().handle(GoCdObjects.request(Constants.PLUGIN_NOTIFICATIONS_INTERESTED_IN, null));
         assertNotNull(response);

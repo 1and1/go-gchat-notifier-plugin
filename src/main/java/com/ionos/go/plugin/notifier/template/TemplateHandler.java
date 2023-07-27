@@ -1,6 +1,5 @@
 package com.ionos.go.plugin.notifier.template;
 
-import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -12,8 +11,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TimeZone;
 
 /** A wrapper around Freemarker to instantiate a template for

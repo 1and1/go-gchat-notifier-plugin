@@ -14,9 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 
 public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
@@ -98,7 +96,7 @@ public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
 
         StageAndAgentStatusChangedResponse stageResponse = getGson().fromJson(response.responseBody(), StageAndAgentStatusChangedResponse.class);
         assertEquals(StageAndAgentStatusChangedResponse.Status.failure, stageResponse.getStatus());
-        assertEquals(Arrays.asList("GChat sending problem: Google chat url returned http status 400 Bad Request"), stageResponse.getMessages());
+        assertEquals(Collections.singletonList("GChat sending problem: Google chat url returned http status 400 Bad Request"), stageResponse.getMessages());
 
         assertEquals(1, GoogleMockServlet.getInvocations());
         assertEquals("application/json; charset=UTF-8", GoogleMockServlet.getCapturedRequestContentType());

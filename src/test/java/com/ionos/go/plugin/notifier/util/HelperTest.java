@@ -1,13 +1,10 @@
 package com.ionos.go.plugin.notifier.util;
 
-import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 
 public class HelperTest {

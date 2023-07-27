@@ -5,11 +5,6 @@ import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 /** Helpers for object creation. */
 class GoCdObjects {
     private GoCdObjects() {

@@ -1,20 +1,12 @@
 package com.ionos.go.plugin.notifier.util;
 
-import com.ionos.go.plugin.notifier.GoNotifierPlugin;
 import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
-import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 
 public class JsonUtilTest {

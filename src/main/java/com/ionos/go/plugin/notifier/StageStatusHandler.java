@@ -14,7 +14,6 @@ import freemarker.template.TemplateException;
 import lombok.NonNull;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.ionos.go.plugin.notifier.util.JsonUtil.fromJsonString;
