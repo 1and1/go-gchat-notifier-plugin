@@ -22,6 +22,10 @@ public class Helper {
 
     private static final boolean DEBUG = false;
 
+    private Helper() {
+        // no instance
+    }
+
     /** Dumps a String to a file in the tmp filesystem if
      * debugging is active.
      * Will catch and ignore all errors.
@@ -34,7 +38,6 @@ public class Helper {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         Path filename = Paths.get("/tmp", simpleDateFormat.format(new Date()) + ".txt");
-        Gson gson = new Gson();
         try (Writer writer = Files.newBufferedWriter(filename, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
             writer.write(str);
         } catch (IOException e) {

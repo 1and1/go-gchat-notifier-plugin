@@ -46,13 +46,12 @@ public class StageStatusHandler implements GoPluginApiRequestHandler {
         Helper.debugDump(request.requestBody());
 
         StageStatusRequest stageStatus = fromJsonString(request.requestBody(), StageStatusRequest.class);
-        StageAndAgentStatusChangedResponse response = new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.success);;
+        StageAndAgentStatusChangedResponse response = new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.success);
         String condition = settings.get(Constants.PARAM_CONDITION);
         String template = settings.get(Constants.PARAM_TEMPLATE);
         String webhookUrl = settings.get(Constants.PARAM_WEBHOOK_URL);
         String proxyUrl = settings.get(Constants.PARAM_PROXY_URL);
 
-        String instanceTemplate = null;
         Helper.debugDump(stageStatus);
         boolean conditionEval;
 
@@ -84,15 +83,20 @@ public class StageStatusHandler implements GoPluginApiRequestHandler {
             TemplateHandler templateHandler = new TemplateHandler("template", template);
             instanceTemplate = templateHandler.eval(new TemplateContext(stageStatus, serverInfo));
             LOGGER.debug("Instance template: " + instanceTemplate);
-            GoogleChatWebhookSender googleChatWebhookSender = new GoogleChatWebhookSender(proxyUrl);
-            try {
-                googleChatWebhookSender.send(webhookUrl, instanceTemplate);
-            } catch (IOException e) {
-                response = new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.failure, "GChat sending problem: " + e.getMessage());
-            }
+            response = sendGoogleMessage(response, webhookUrl, proxyUrl, instanceTemplate);
         } catch (TemplateException | IOException e) {
             LOGGER.warn("Exception for template " + condition, e);
             response = new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.failure, "Template problem: " + e.getMessage());
+        }
+        return response;
+    }
+
+    private static StageAndAgentStatusChangedResponse sendGoogleMessage(StageAndAgentStatusChangedResponse response, String webhookUrl, String proxyUrl, String instanceTemplate) {
+        GoogleChatWebhookSender googleChatWebhookSender = new GoogleChatWebhookSender(proxyUrl);
+        try {
+            googleChatWebhookSender.send(webhookUrl, instanceTemplate);
+        } catch (IOException e) {
+            response = new StageAndAgentStatusChangedResponse(StageAndAgentStatusChangedResponse.Status.failure, "GChat sending problem: " + e.getMessage());
         }
         return response;
     }

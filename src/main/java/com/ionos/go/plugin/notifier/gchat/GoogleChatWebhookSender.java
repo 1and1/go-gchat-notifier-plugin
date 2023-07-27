@@ -14,7 +14,6 @@ import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Optional;
 
 /** Sends a message to the google chat service using a webhook url.
  * @see <a href="https://developers.google.com/chat/how-tos/webhooks">Googles howto on webhooks for GChat</a>
