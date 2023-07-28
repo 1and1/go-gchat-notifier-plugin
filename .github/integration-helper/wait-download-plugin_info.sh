@@ -20,9 +20,8 @@ for (( i = 0; i < 180 ; i++ )); do
   # download API
   curl > plugin_info.json --silent \
     -H "Accept: ${ACCEPT}" \
-    http://localhost:8153/go/api/admin/plugin_info/com.ionos.gchat.notifier \
-    || continue
+    http://localhost:8153/go/api/admin/plugin_info/com.ionos.gchat.notifier || continue
 
   # break if success
-  grep ARTIFACT_ID plugin_info.json && break
+  grep com.ionos.gchat.notifier plugin_info.json && break
 done

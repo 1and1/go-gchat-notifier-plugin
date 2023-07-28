@@ -10,7 +10,7 @@
 
 FILE=$1
 
-grep ARTIFACT_ID ${FILE} || exit 1
-grep PACKAGING ${FILE} || exit 1
-grep POLL_VERSION_TO ${FILE} || exit 1
-grep REPO_URL ${FILE} || exit 1
+grep template ${FILE} || exit 1
+grep condition ${FILE} || exit 1
+grep webhook_url ${FILE} || exit 1
+grep proxy_url ${FILE} || exit 1
