@@ -19,7 +19,6 @@ import java.util.Map;
 public class StageStatusRequest {
     @Expose
     @Getter
-    @Setter
     private Pipeline pipeline;
 
     /** Summary of the state of a pipeline with its stage and jobs. */
@@ -28,28 +27,23 @@ public class StageStatusRequest {
     public static class Pipeline {
         @Expose
         @Getter
-        @Setter
         private String name;
 
         @Expose
         @Getter
-        @Setter
         private String counter;
 
         @Expose
         @Getter
-        @Setter
         private String group;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("build-cause")
         private List<BuildCause> buildCause;
 
         @Expose
         @Getter
-        @Setter
         private Stage stage;
     }
 
@@ -59,17 +53,14 @@ public class StageStatusRequest {
     public static class BuildCause {
         @Expose
         @Getter
-        @Setter
         private Boolean changed;
 
         @Expose
         @Getter
-        @Setter
         private Material material;
 
         @Expose
         @Getter
-        @Setter
         List<Modification> modifications;
     }
 
@@ -79,18 +70,15 @@ public class StageStatusRequest {
     public static class Material {
         @Expose
         @Getter
-        @Setter
         private String fingerprint;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("git-configuration")
         private GitConfiguration gitConfiguration;
 
         @Expose
         @Getter
-        @Setter
         String type;
     }
 
@@ -100,18 +88,15 @@ public class StageStatusRequest {
     public static class GitConfiguration {
         @Expose
         @Getter
-        @Setter
         private String branch;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("shallow-clone")
         private Boolean shallowClone;
 
         @Expose
         @Getter
-        @Setter
         String url;
     }
 
@@ -121,18 +106,15 @@ public class StageStatusRequest {
     public static class Modification {
         @Expose
         @Getter
-        @Setter
         private Map<Object, Object> data;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("modified-time")
         private ZonedDateTime modifiedTime;
 
         @Expose
         @Getter
-        @Setter
         String revision;
     }
 
@@ -142,57 +124,47 @@ public class StageStatusRequest {
     public static class Stage {
         @Expose
         @Getter
-        @Setter
         private String name;
 
         @Expose
         @Getter
-        @Setter
         private String counter;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("approval-type")
         private String approvalType;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("approved-by")
         private String approvedBy;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("previous-stage-name")
         private String previousStageName;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("previous-stage-counter")
         private Integer previousStageCounter;
 
         @Expose
         @Getter
-        @Setter
         private String state;
 
         @Expose
         @Getter
-        @Setter
         private String result;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("create-time")
         private ZonedDateTime createTime;
 
         @Expose
         @Getter
-        @Setter
         private Job[] jobs;
     }
 
@@ -202,39 +174,32 @@ public class StageStatusRequest {
     public static class Job {
         @Expose
         @Getter
-        @Setter
         private String name;
 
         @Expose
         @Getter
-        @Setter
         private String counter;
 
         @Expose
         @Getter
-        @Setter
         private String state;
 
         @Expose
         @Getter
-        @Setter
         private String result;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("schedule-time")
         private ZonedDateTime scheduleTime;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("assign-time")
         private ZonedDateTime assignTime;
 
         @Expose
         @Getter
-        @Setter
         @SerializedName("complete-time")
         private ZonedDateTime completeTime;
     }
