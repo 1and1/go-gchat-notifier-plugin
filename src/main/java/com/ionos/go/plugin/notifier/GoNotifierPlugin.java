@@ -3,7 +3,6 @@ package com.ionos.go.plugin.notifier;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ionos.go.plugin.notifier.message.*;
-import com.ionos.go.plugin.notifier.message.incoming.AgentStatusRequest;
 import com.ionos.go.plugin.notifier.message.outgoing.GetConfigurationProperty;
 import com.ionos.go.plugin.notifier.message.outgoing.GetConfigurationResponse;
 import com.ionos.go.plugin.notifier.message.outgoing.NotificationsInterestedInResponse;
@@ -98,7 +97,6 @@ public class GoNotifierPlugin implements GoPlugin {
         handlerMap = new HashMap<>();
         handlerMap.put(Constants.PLUGIN_NOTIFICATIONS_INTERESTED_IN, this::handleNotificationsInterestedIn);
         handlerMap.put(Constants.PLUGIN_STAGE_STATUS, this::handleStageStatus);
-        handlerMap.put(Constants.PLUGIN_AGENT_STATUS, this::handleAgentStatus);
         handlerMap.put(Constants.PLUGIN_GET_CONFIGURATION, this::handleGetConfiguration);
         handlerMap.put(Constants.PLUGIN_VALIDATE_CONFIGURATION, this::handleValidateConfiguration);
         handlerMap.put(Constants.PLUGIN_GET_VIEW, this::handleGetView);
@@ -132,11 +130,6 @@ public class GoNotifierPlugin implements GoPlugin {
 
     private GoPluginApiResponse handleGetConfiguration(GoPluginApiRequest request) {
         return success(toJsonString(configurationProperties));
-    }
-
-    private GoPluginApiResponse handleAgentStatus(GoPluginApiRequest request) {
-        AgentStatusRequest agentStatus = fromJsonString(request.requestBody(), AgentStatusRequest.class);
-        return new DefaultGoPluginApiResponse(HttpStatus.SC_NOT_IMPLEMENTED, "Not Implemented");
     }
 
     private GoPluginApiResponse handleGetView(GoPluginApiRequest request) {

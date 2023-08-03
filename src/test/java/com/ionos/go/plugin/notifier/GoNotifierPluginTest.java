@@ -42,14 +42,6 @@ public class GoNotifierPluginTest extends GoNotifierPluginBase {
     }
 
     @Test
-    public void testHandleAgentStatus() {
-        GoPluginApiResponse response = getGoNotifierPlugin().handle(GoCdObjects.request(Constants.PLUGIN_AGENT_STATUS, null));
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_NOT_IMPLEMENTED, response.responseCode());
-        assertEquals(Collections.emptyMap(), response.responseHeaders());
-    }
-
-    @Test
     public void testHandleGetConfiguration() {
         GoPluginApiResponse response = getGoNotifierPlugin().handle(
                 GoCdObjects.request(Constants.PLUGIN_GET_CONFIGURATION, null));
