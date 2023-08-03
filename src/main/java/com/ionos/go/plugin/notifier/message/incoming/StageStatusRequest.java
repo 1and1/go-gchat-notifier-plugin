@@ -31,6 +31,10 @@ public class StageStatusRequest {
 
         @Expose
         @Getter
+        private String label;
+
+        @Expose
+        @Getter
         private String counter;
 
         @Expose
@@ -79,6 +83,11 @@ public class StageStatusRequest {
 
         @Expose
         @Getter
+        @SerializedName("pipeline-configuration")
+        private PipelineConfiguration pipeineConfiguration;
+
+        @Expose
+        @Getter
         String type;
     }
 
@@ -98,6 +107,21 @@ public class StageStatusRequest {
         @Expose
         @Getter
         String url;
+    }
+
+    /** The pipeline config of a {@link Material}. */
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PipelineConfiguration {
+        @Expose
+        @Getter
+        @SerializedName("pipeline-name")
+        private String pipelineName;
+
+        @Expose
+        @Getter
+        @SerializedName("stage-name")
+        private String stageName;
     }
 
     /** A modification within a {@link BuildCause}. */
@@ -165,6 +189,11 @@ public class StageStatusRequest {
 
         @Expose
         @Getter
+        @SerializedName("last-transition-time")
+        private ZonedDateTime lastTransitionTime;
+
+        @Expose
+        @Getter
         private Job[] jobs;
     }
 
@@ -174,11 +203,12 @@ public class StageStatusRequest {
     public static class Job {
         @Expose
         @Getter
-        private String name;
+        @SerializedName("agent-uuid")
+        private String agentUUID;
 
         @Expose
         @Getter
-        private String counter;
+        private String name;
 
         @Expose
         @Getter
