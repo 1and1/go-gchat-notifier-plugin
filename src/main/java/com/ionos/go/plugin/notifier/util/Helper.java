@@ -20,7 +20,7 @@ import java.util.Objects;
 public class Helper {
     private static final Logger LOGGER = Logger.getLoggerFor(Helper.class);
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private Helper() {
         // no instance
