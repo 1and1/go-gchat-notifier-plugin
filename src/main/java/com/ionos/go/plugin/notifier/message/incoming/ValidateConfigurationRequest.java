@@ -15,5 +15,6 @@ public class ValidateConfigurationRequest {
     @Expose
     @SerializedName("plugin-settings")
     @Getter
+    @Setter
     private Map<String, Map<String, String>> pluginSettings;
 }
