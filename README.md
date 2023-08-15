@@ -56,7 +56,7 @@ name,
 * add a new webhook name, provide an optional avatar URL and press 'Save'.
 * a webhook URL will be generated for you.
 
-At the moment, the tokens look like this:
+At the moment, the webhook URLs look like this:
 
 `https://chat.googleapis.com/v1/spaces/.../messages?key=...&token=...`
 
