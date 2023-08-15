@@ -11,7 +11,7 @@ Go GChat Notifier Plugin
 A GoCD notification plugin for the
 [GoCD](http://www.go.cd/) continuous integration server.
 
-A chat message can look like this:
+Chat messages can look like this:
 
 ---
 ![GChat screenshot](img/gchat.png)
