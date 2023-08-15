@@ -27,7 +27,7 @@ public class StageStatusRequestTest {
         assertEquals(false,
                 req.getPipeline().getBuildCause().get(0).getChanged());
         assertNull(
-                req.getPipeline().getBuildCause().get(0).getMaterial().getPipeineConfiguration());
+                req.getPipeline().getBuildCause().get(0).getMaterial().getPipelineConfiguration());
 
         assertEquals("master",
                 req.getPipeline().getBuildCause().get(0).getMaterial().getGitConfiguration().getBranch());
@@ -55,9 +55,9 @@ public class StageStatusRequestTest {
         assertNull(
                 req.getPipeline().getBuildCause().get(1).getMaterial().getGitConfiguration());
         assertEquals("chimp-sandbox",
-                req.getPipeline().getBuildCause().get(1).getMaterial().getPipeineConfiguration().getPipelineName());
+                req.getPipeline().getBuildCause().get(1).getMaterial().getPipelineConfiguration().getPipelineName());
         assertEquals("Deploy",
-                req.getPipeline().getBuildCause().get(1).getMaterial().getPipeineConfiguration().getStageName());
+                req.getPipeline().getBuildCause().get(1).getMaterial().getPipelineConfiguration().getStageName());
         assertEquals("pipeline",
                 req.getPipeline().getBuildCause().get(1).getMaterial().getType());
 
