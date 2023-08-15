@@ -84,7 +84,7 @@ public class StageStatusRequest {
         @Expose
         @Getter
         @SerializedName("pipeline-configuration")
-        private PipelineConfiguration pipeineConfiguration;
+        private PipelineConfiguration pipelineConfiguration;
 
         @Expose
         @Getter
