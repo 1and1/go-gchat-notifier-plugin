@@ -37,7 +37,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <go.version>18.9.0</go.version>
+    <go.version>23.3.0</go.version>
   </properties>
 
   <dependencies>
