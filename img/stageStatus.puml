@@ -1,0 +1,36 @@
+@startmindmap
+* stageStatus
+** pipeline
+*** buildCause
+*** counter
+**** 8
+*** group
+**** Github
+*** label
+**** d7b2629fda5048b8eea42b1bee968a8fd949eadd
+*** name
+**** go-gchat-notifier-plugin
+*** stage
+**** approvalType
+***** success
+**** approvedBy
+***** changes
+**** counter
+***** 1
+**** createTime
+***** 2023-07-19T13:16:56.571+0000
+**** jobs
+**** lastTransitionTime
+***** 2023-07-19T13:17:09.671+0000
+**** name
+***** Snapshot
+**** previousStageCounter
+***** 1.0
+**** previousStageName
+***** Test
+**** result
+***** Passed
+**** state
+***** Passed
+
+@endmindmap
