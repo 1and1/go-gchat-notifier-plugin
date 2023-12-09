@@ -1,18 +1,18 @@
 package com.ionos.go.plugin.notifier.util;
 
 import com.ionos.go.plugin.notifier.message.incoming.StageStatusRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.format.DateTimeFormatter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 public class JsonUtilTest {
 
     @Test
-    public void testZoneDateTimeConversion() {
+    void testZoneDateTimeConversion() {
         String parseMe =
             "{ " +
                 "\"pipeline\": {" +
