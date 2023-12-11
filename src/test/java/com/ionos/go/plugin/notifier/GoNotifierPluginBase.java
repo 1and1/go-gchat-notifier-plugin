@@ -6,7 +6,7 @@ import com.thoughtworks.go.plugin.api.request.GoApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import lombok.Getter;
 import org.apache.hc.core5.http.HttpStatus;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class GoNotifierPluginBase extends CommonTestBase {
         logger = Logger.getLoggerFor(getClass());
     }
 
-    @Before
+    @BeforeEach
     public void setupPlugin() {
         this.goNotifierPlugin = new GoNotifierPlugin();
         this.goNotifierPlugin.initializeGoApplicationAccessor(new GoApplicationAccessor() {

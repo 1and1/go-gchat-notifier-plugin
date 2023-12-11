@@ -2,19 +2,19 @@ package com.ionos.go.plugin.notifier.message.incoming;
 
 import com.ionos.go.plugin.notifier.util.Helper;
 import com.ionos.go.plugin.notifier.util.JsonUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class StageStatusRequestTest {
     /** Validate JSON to Java mapping with real world example. */
     @Test
-    public void testMapping() throws IOException {
+    void testMapping() throws IOException {
         String stageStatusRequest = Helper.readResource("/bigStateStatusFromGocd.json");
         StageStatusRequest req = JsonUtil.fromJsonString(stageStatusRequest, StageStatusRequest.class);
 

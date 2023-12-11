@@ -2,27 +2,27 @@ package com.ionos.go.plugin.notifier;
 
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.hc.core5.http.HttpStatus;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class GoNotifierPluginTest extends GoNotifierPluginBase {
 
     @Test
-    public void testPluginIdentifier() {
+    void testPluginIdentifier() {
         assertEquals("notification", getGoNotifierPlugin().pluginIdentifier().getExtension());
         assertTrue(getGoNotifierPlugin().pluginIdentifier().getSupportedExtensionVersions().contains("4.0"));
     }
 
     @Test
-    public void testHandleNotificationsInterestedIn() {
+    void testHandleNotificationsInterestedIn() {
         // request get conf
         GoPluginApiResponse response = getGoNotifierPlugin().handle(GoCdObjects.request(Constants.PLUGIN_NOTIFICATIONS_INTERESTED_IN, null));
         assertNotNull(response);
@@ -32,26 +32,26 @@ public class GoNotifierPluginTest extends GoNotifierPluginBase {
     }
 
     @Test
-    public void testHandleGetView() {
+    void testHandleGetView() {
         GoPluginApiResponse response = getGoNotifierPlugin().handle(GoCdObjects.request(Constants.PLUGIN_GET_VIEW, null));
         assertNotNull(response);
         assertEquals(HttpStatus.SC_OK, response.responseCode());
         assertEquals(Collections.emptyMap(), response.responseHeaders());
-        assertFalse("needs to be non empty", response.responseBody().isEmpty());
-        assertFalse("needs to contain input html element", response.responseBody().contains("<input"));
+        assertFalse(response.responseBody().isEmpty(), "needs to be non empty");
+        assertFalse(response.responseBody().contains("<input"), "needs to contain input html element");
     }
 
     @Test
-    public void testHandleGetConfiguration() {
+    void testHandleGetConfiguration() {
         GoPluginApiResponse response = getGoNotifierPlugin().handle(
                 GoCdObjects.request(Constants.PLUGIN_GET_CONFIGURATION, null));
         assertNotNull(response);
         assertEquals(HttpStatus.SC_OK, response.responseCode());
         assertEquals(Collections.emptyMap(), response.responseHeaders());
         Map<String, Object> map = getGson().fromJson(response.responseBody(), Map.class);
-        assertTrue("contains a config key", map.containsKey(Constants.PARAM_CONDITION));
-        assertTrue("contains a config key", map.containsKey(Constants.PARAM_TEMPLATE));
-        assertTrue("contains a config key", map.containsKey(Constants.PARAM_PROXY_URL));
-        assertTrue("contains a config key", map.containsKey(Constants.PARAM_WEBHOOK_URL));
+        assertTrue(map.containsKey(Constants.PARAM_CONDITION), "contains a config key");
+        assertTrue(map.containsKey(Constants.PARAM_TEMPLATE), "contains a config key");
+        assertTrue(map.containsKey(Constants.PARAM_PROXY_URL), "contains a config key");
+        assertTrue(map.containsKey(Constants.PARAM_WEBHOOK_URL), "contains a config key");
     }
 }

@@ -4,28 +4,28 @@ import com.ionos.go.plugin.notifier.message.incoming.ValidateConfigurationReques
 import com.ionos.go.plugin.notifier.message.outgoing.ValidateConfigurationResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.hc.core5.http.HttpStatus;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginBase {
 
     private ValidateConfigurationRequest request;
 
-    @Before
+    @BeforeEach
     public void setupTest() {
         request = new ValidateConfigurationRequest();
     }
 
     @Test
-    public void testHandleValidateConfigurationWithBadRequest() {
+    void testHandleValidateConfigurationWithBadRequest() {
         GoPluginApiResponse response = getGoNotifierPlugin().handle(
                 GoCdObjects.request(Constants.PLUGIN_VALIDATE_CONFIGURATION, getGson().toJson(request)));
         assertNotNull(response);
@@ -34,7 +34,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
     }
 
     @Test
-    public void testHandleValidateConfigurationWithGoodRequestMultipleErrors() {
+    void testHandleValidateConfigurationWithGoodRequestMultipleErrors() {
         request.setPluginSettings(new HashMap<>());
         GoPluginApiResponse response = getGoNotifierPlugin().handle(
                 GoCdObjects.request(Constants.PLUGIN_VALIDATE_CONFIGURATION, getGson().toJson(request)));
@@ -47,7 +47,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
     }
 
     @Test
-    public void testHandleValidateConfigurationWithGoodRequestNoErrors() {
+    void testHandleValidateConfigurationWithGoodRequestNoErrors() {
         Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
         request.setPluginSettings(pluginSettings);
         GoPluginApiResponse response = getGoNotifierPlugin().handle(
@@ -60,7 +60,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
     }
 
     @Test
-    public void testHandleValidateConfigurationWithMalformedCondition() {
+    void testHandleValidateConfigurationWithMalformedCondition() {
         Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
         pluginSettings.put(Constants.PARAM_CONDITION, Collections.singletonMap(Constants.FIELD_VALUE, "${ error"));
         request.setPluginSettings(pluginSettings);
@@ -75,7 +75,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
     }
 
     @Test
-    public void testHandleValidateConfigurationWithMalformedTemplate() {
+    void testHandleValidateConfigurationWithMalformedTemplate() {
         Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
         pluginSettings.put(Constants.PARAM_TEMPLATE, Collections.singletonMap(Constants.FIELD_VALUE, "${ error"));
         request.setPluginSettings(pluginSettings);
@@ -90,7 +90,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
     }
 
     @Test
-    public void testHandleValidateConfigurationWithTemplateAccessingUndefinedProperty() {
+    void testHandleValidateConfigurationWithTemplateAccessingUndefinedProperty() {
         Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
         pluginSettings.put(Constants.PARAM_TEMPLATE, Collections.singletonMap(Constants.FIELD_VALUE, "${ doesntexist.foobar }"));
         request.setPluginSettings(pluginSettings);
@@ -105,7 +105,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
     }
 
     @Test
-    public void testHandleValidateConfigurationWithConditionAccessingUndefinedProperty() {
+    void testHandleValidateConfigurationWithConditionAccessingUndefinedProperty() {
         Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
         pluginSettings.put(Constants.PARAM_CONDITION, Collections.singletonMap(Constants.FIELD_VALUE, "${ doesntexist.foobar }"));
         request.setPluginSettings(pluginSettings);
@@ -120,7 +120,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
     }
 
     @Test
-    public void testHandleValidateConfigurationWithConditionNotTrueOrFalse() {
+    void testHandleValidateConfigurationWithConditionNotTrueOrFalse() {
         Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
         pluginSettings.put(Constants.PARAM_CONDITION, Collections.singletonMap(Constants.FIELD_VALUE, "tralse"));
         request.setPluginSettings(pluginSettings);
@@ -132,11 +132,11 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
         ValidateConfigurationResponse[] validateConfigurationResponses = getGson().fromJson(response.responseBody(), ValidateConfigurationResponse[].class);
         assertEquals(1, validateConfigurationResponses.length);
         assertEquals(Constants.PARAM_CONDITION, validateConfigurationResponses[0].getKey());
-        assertTrue("Should contain 'true or false'", validateConfigurationResponses[0].getMessage().contains("true or false"));
+        assertTrue(validateConfigurationResponses[0].getMessage().contains("true or false"), "Should contain 'true or false'");
     }
 
     @Test
-    public void testHandleValidateConfigurationWithMalformedProxyUrl() {
+    void testHandleValidateConfigurationWithMalformedProxyUrl() {
         Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
         pluginSettings.put(Constants.PARAM_PROXY_URL, Collections.singletonMap(Constants.FIELD_VALUE, "hppt://foo.bar"));
         request.setPluginSettings(pluginSettings);
@@ -152,7 +152,7 @@ public class GoNotifierPluginValidateConfigurationTest extends GoNotifierPluginB
     }
 
     @Test
-    public void testHandleValidateConfigurationWithMalformedWebhookUrl() {
+    void testHandleValidateConfigurationWithMalformedWebhookUrl() {
         Map<String, Map<String, String>> pluginSettings = newGoodPluginSettingsTemplate();
         pluginSettings.put(Constants.PARAM_WEBHOOK_URL, Collections.singletonMap(Constants.FIELD_VALUE, "hppt://foo.bar"));
         request.setPluginSettings(pluginSettings);

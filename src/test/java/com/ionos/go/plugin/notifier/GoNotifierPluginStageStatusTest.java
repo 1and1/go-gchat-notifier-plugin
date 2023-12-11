@@ -4,17 +4,17 @@ import com.ionos.go.plugin.notifier.message.outgoing.StageAndAgentStatusChangedR
 import com.ionos.go.plugin.notifier.util.Helper;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.hc.core5.http.HttpStatus;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
@@ -22,33 +22,33 @@ public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
     private static EmbeddedHttpServer embeddedHttpServer;
     private static int embeddedHttpPort;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLocalWebServer() {
         embeddedHttpServer = new EmbeddedHttpServer().withServlet(GoogleMockServlet.class, "/gchat");
         embeddedHttpServer.start();
         embeddedHttpPort = embeddedHttpServer.getRunningPort();
     }
 
-    @Before
+    @BeforeEach
     public void setupConfig() {
         getPluginSettings().put(Constants.PARAM_WEBHOOK_URL, "http://localhost:" + embeddedHttpPort + "/gchat");
         getPluginSettings().put(Constants.PARAM_CONDITION, "true");
         getPluginSettings().put(Constants.PARAM_TEMPLATE, "${stageStatus.pipeline.group}");
     }
 
-    @Before
+    @BeforeEach
     public void initServlet() {
         GoogleMockServlet.reset();
         GoogleMockServlet.setStatusToReturn(HttpStatus.SC_OK);
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopLocalWebServer() {
         embeddedHttpServer.stop();
     }
 
     @Test
-    public void testHandleStageStatusNoSendingConditionFalse() throws IOException {
+    void testHandleStageStatusNoSendingConditionFalse() throws IOException {
         String stageStatusJson = Helper.readResource("/stageStatus.json");
         getPluginSettings().put(Constants.PARAM_CONDITION, "false");
 
@@ -66,7 +66,7 @@ public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
     }
 
     @Test
-    public void testHandleStageStatusGoodWeather() throws IOException {
+    void testHandleStageStatusGoodWeather() throws IOException {
         String stageStatusJson = Helper.readResource("/stageStatus.json");
 
         GoPluginApiResponse response = getGoNotifierPlugin().handle(
@@ -85,7 +85,7 @@ public class GoNotifierPluginStageStatusTest extends GoNotifierPluginBase {
     }
 
     @Test
-    public void testHandleStageStatusWithRemoteBadRequest() throws IOException {
+    void testHandleStageStatusWithRemoteBadRequest() throws IOException {
         GoogleMockServlet.setStatusToReturn(HttpStatus.SC_BAD_REQUEST);
         String stageStatusJson = Helper.readResource("/stageStatus.json");
 

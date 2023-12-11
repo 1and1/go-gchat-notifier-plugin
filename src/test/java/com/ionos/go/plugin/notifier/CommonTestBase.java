@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.ionos.go.plugin.notifier.util.Helper;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import lombok.Getter;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -29,7 +29,7 @@ public class CommonTestBase {
         logger = Logger.getLoggerFor(getClass());
     }
 
-    @Before
+    @BeforeEach
     public void setupObjects() throws IOException {
         this.gson = new Gson();
         this.serverInfo = gson.fromJson(Helper.readResource("/serverInfo.json"), Map.class);

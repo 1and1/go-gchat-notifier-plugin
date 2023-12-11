@@ -4,7 +4,7 @@
 
   <groupId>com.oneandone</groupId>
   <artifactId>go-gchat-notifier</artifactId>
-  <version>0.5.9-SNAPSHOT</version>
+  <version>0.5.10-SNAPSHOT</version>
 
   <name>GoCD GChat Notifier Plugin</name>
   <description>GoCD plugin to send notifications to GChat when pipeline states change</description>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
       <artifactId>httpclient5</artifactId>
-      <version>5.2.3</version>
+      <version>5.3</version>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
@@ -69,12 +69,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
       <version>9.4.53.v20231009</version>
@@ -84,6 +78,12 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
       <version>9.4.53.v20231009</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.10.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
