@@ -112,7 +112,7 @@ stage run.
 ```text
 *Failed:* ${stageStatus.pipeline.group}/${stageStatus.pipeline.name}/${stageStatus.pipeline.stage.name} is ${stageStatus.pipeline.stage.state}, result ${stageStatus.pipeline.stage.result}
 <#list stageStatus.pipeline.stage.jobs as job>
-${job.name}: ${job.result} <${serverInfo.secure_site_url}/go/tab/build/detail/${stageStatus.pipeline.name}/${stageStatus.pipeline.counter}/${stageStatus.pipeline.stage.name}/${stageStatus.pipeline.stage.counter}/${job.name}|console>
+${job.name}: ${job.result} <#if serverInfo['secure_site_url']??><${serverInfo.secure_site_url}/go/tab/build/detail/${stageStatus.pipeline.name}/${stageStatus.pipeline.counter}/${stageStatus.pipeline.stage.name}/${stageStatus.pipeline.stage.counter}/${job.name}|console></#if>
 </#list>
 ```
 
