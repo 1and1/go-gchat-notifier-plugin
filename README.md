@@ -8,6 +8,8 @@ Go GChat Notifier Plugin
 [![ReleaseDate](https://img.shields.io/github/release-date/1and1/go-gchat-notifier-plugin)](https://github.com/1and1/go-gchat-notifier-plugin/releases)<!--- [![Downloads](https://img.shields.io/github/downloads/1and1/go-gchat-notifier-plugin/total)](https://github.com/1and1/go-gchat-notifier-plugin/releases) -->
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+*This repo has been set to read-only because we are no longer using GoCD and couldn't find another maintainer in our organization to maintain the project. Feel free to fork.*
+
 A GoCD notification plugin for the
 [GoCD](http://www.go.cd/) continuous integration server.
 
